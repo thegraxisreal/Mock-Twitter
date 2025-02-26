@@ -1,0 +1,974 @@
+TWITTER 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Minimalist Mock Twitter</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <style>
+    /* Base and layout */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fafafa;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container.main-container {
+      margin-top: 20px;
+    }
+    nav.navbar {
+      background-color: #fff;
+      border-bottom: 1px solid #e6e6e6;
+    }
+    nav.navbar .navbar-brand {
+      font-weight: bold;
+      color: #333;
+    }
+    /* Sidebar */
+    .sidebar {
+      padding: 0;
+    }
+    .sidebar .nav-link {
+      padding: 8px 0;
+      color: #333;
+      font-weight: normal;
+    }
+    .sidebar .nav-link:hover {
+      text-decoration: underline;
+    }
+    /* Forms and sections */
+    .auth-form,
+    .tweet-form,
+    .tweet-feed,
+    #profileSection,
+    #premiumSection,
+    #userProfileSection,
+    #adminSection {
+      background: #fff;
+      border: 1px solid #e6e6e6;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .auth-form h2,
+    .tweet-form h2,
+    #premiumSection h2,
+    #profileSection h2,
+    #userProfileSection h2,
+    #adminSection h2 {
+      font-size: 1.25rem;
+      margin-bottom: 15px;
+    }
+    input.form-control,
+    textarea.form-control {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 1rem;
+    }
+    button.btn {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      font-size: 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button.btn:hover {
+      background-color: #555;
+    }
+    /* Tweet styles */
+    .tweet {
+      border-bottom: 1px solid #e6e6e6;
+      padding: 10px 0;
+    }
+    .tweet:last-child {
+      border-bottom: none;
+    }
+    .tweet-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .tweet-profile-pic {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+    }
+    .tweet-username {
+      font-weight: bold;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+    .tweet-timestamp {
+      font-size: 0.8rem;
+      color: #777;
+    }
+    .tweet-text {
+      margin: 5px 0;
+    }
+    .tweet-text {
+  margin: 5px 0;
+
+  .mention, .hashtag {
+  color: rgb(0, 153, 255);
+}
+
+}
+    .like-btn, .reply-btn, .quote-btn {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #555;
+      margin-right: 10px;
+    }
+    .like-btn.liked {
+      color: #e0245e;
+    }
+    /* Poll and quoted tweet */
+    .poll-container {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+    }
+    .poll-option {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .poll-vote-btn {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .quoted-tweet {
+      border-left: 3px solid #333;
+      padding-left: 10px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    /* Theme toggle */
+    #themeToggle {
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      color: #333;
+      font-size: 1rem;
+    }
+    /* Dark mode styles */
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #ccc;
+    }
+    body.dark-mode nav.navbar {
+      background-color: #333;
+      border-bottom: 1px solid #444;
+    }
+    body.dark-mode .sidebar .nav-link {
+      color: #ccc;
+    }
+    body.dark-mode .auth-form,
+    body.dark-mode .tweet-form,
+    body.dark-mode .tweet-feed,
+    body.dark-mode #profileSection,
+    body.dark-mode #premiumSection,
+    body.dark-mode #userProfileSection,
+    body.dark-mode #adminSection {
+      background: #2a2a2a;
+      border: 1px solid #444;
+    }
+    body.dark-mode input.form-control,
+    body.dark-mode textarea.form-control {
+      background: #2a2a2a;
+      border: 1px solid #555;
+      color: #ccc;
+    }
+    body.dark-mode button.btn {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body class="light-mode">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">Mock Twitter</a>
+      <button id="themeToggle" class="nav-link">Toggle Dark Mode</button>
+    </div>
+  </nav>
+  <div class="container main-container">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-md-3">
+        <div class="sidebar">
+          <a href="#" class="nav-link" onclick="fetchAndRenderTweets()">Home</a>
+          <a href="#" class="nav-link" onclick="showEditableProfile()">Profile</a>
+          <a href="#" class="nav-link" onclick="showPremiumSection()">Premium</a>
+          <a href="#" class="nav-link" onclick="showAdminSection()">Admin</a>
+          <a href="#" class="nav-link" onclick="logout()">Logout</a>
+          <a href="twitter.html" class="nav-link">Back to Klanite</a>
+        </div>
+      </div>
+      <!-- Main Content -->
+      <div class="col-md-9">
+        <!-- Authentication -->
+        <div id="authSection" class="auth-form">
+          <h2>Log In / Sign Up</h2>
+          <div class="form-group">
+            <input type="text" id="authHandle" class="form-control" placeholder="Handle" />
+          </div>
+          <div class="form-group">
+            <input type="password" id="authPassword" class="form-control" placeholder="Password" />
+          </div>
+          <button id="authButton" class="btn">Submit</button>
+          <p id="authError" class="text-danger"></p>
+        </div>
+        <!-- Tweet Section -->
+        <div id="tweetSection" style="display:none;">
+          <div class="container mt-3">
+            <form id="searchForm" class="form-inline">
+              <input type="text" id="searchInput" class="form-control mr-2" placeholder="Search tweets" />
+              <button type="submit" class="btn">Search</button>
+            </form>
+          </div>
+          <div class="tweet-form">
+            <div class="form-group">
+              <textarea id="tweetText" class="form-control" rows="3" placeholder="What's happening?"></textarea>
+              <small id="charCount" style="float: right;">280</small>
+            </div>
+            <div class="form-group">
+              <input type="file" id="tweetImage" class="form-control-file" accept="image/*" />
+              <button id="addPoll" class="btn" style="margin-top: 10px;">Add Poll</button>
+              <div id="pollFields" style="display: none; margin-top: 10px;">
+                <input type="text" id="pollQuestion" class="form-control mb-2" placeholder="Poll question" />
+                <input type="text" id="pollOption1" class="form-control mb-1" placeholder="Option 1" />
+                <input type="text" id="pollOption2" class="form-control mb-1" placeholder="Option 2" />
+                <button id="submitPollTweet" class="btn">Tweet with Poll</button>
+              </div>
+            </div>
+            <button id="tweetButton" class="btn">Tweet</button>
+          </div>
+          <div id="refreshFeed" class="mb-3">
+            <button class="btn" onclick="fetchAndRenderTweets()">Refresh Feed</button>
+          </div>
+          <div id="tweetFeed" class="tweet-feed"></div>
+        </div>
+        <!-- Premium Section -->
+        <div id="premiumSection" style="display:none;">
+          <h2>Premium Subscription</h2>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="premium-plan">
+                <h3>Premium</h3>
+                <p>Subscribe for blue checkmark verification.</p>
+                <button onclick="subscribePlan('blue')" class="btn">Subscribe</button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="premium-plan">
+                <h3>Premium+</h3>
+                <p>Subscribe for gold checkmark verification.</p>
+                <button onclick="subscribePlan('gold')" class="btn">Subscribe</button>
+              </div>
+            </div>
+          </div>
+          <p id="premiumMessage" class="text-success"></p>
+        </div>
+        <!-- Profile Editing -->
+        <div id="profileSection" style="display:none;">
+          <h2>My Profile (Edit)</h2>
+          <img id="profilePicPreview" src="" alt="Profile Picture" style="width:100px; height:100px; border-radius:50%; margin-bottom:15px;" />
+          <div class="form-group">
+            <input type="file" id="profilePicUpload" class="form-control-file" accept="image/*" />
+          </div>
+          <button id="updateProfilePic" class="btn">Update Profile Picture</button>
+          <p id="profileMessage" class="text-success"></p>
+          <div class="form-group">
+            <label for="profileBio">Bio:</label>
+            <textarea id="profileBio" class="form-control" placeholder="Write your bio here..."></textarea>
+          </div>
+          <button id="saveBio" class="btn">Save Bio</button>
+        </div>
+        <!-- User Profile View -->
+        <div id="userProfileSection" style="display:none;">
+          <button class="btn" onclick="backToMainFeed()">Back to Feed</button>
+          <h2 id="userProfileName"></h2>
+          <img id="userProfilePic" src="" alt="User Profile Picture" style="width:100px; height:100px; border-radius:50%; margin-bottom:15px;" />
+          <p id="userProfileBio"></p>
+          <div id="userTweets" class="tweet-feed"></div>
+        </div>
+        <!-- Admin Panel -->
+        <div id="adminSection" style="display:none;">
+          <h2>Admin Panel</h2>
+          <button class="btn" onclick="backToMainFeed()">Back to Feed</button>
+          <div id="accountList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.body.classList.add("light-mode");
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      if (document.body.classList.contains("light-mode")) {
+        document.body.classList.remove("light-mode");
+        document.body.classList.add("dark-mode");
+        document.getElementById("themeToggle").textContent = "Toggle Light Mode";
+      } else {
+        document.body.classList.remove("dark-mode");
+        document.body.classList.add("light-mode");
+        document.getElementById("themeToggle").textContent = "Toggle Dark Mode";
+      }
+    });
+
+    let currentUser = null;
+
+    function showAuthError(msg) {
+      document.getElementById("authError").textContent = msg;
+    }
+
+    function handleSuccessfulAuth(handle) {
+      currentUser = handle.toLowerCase();
+      document.getElementById("authSection").style.display = "none";
+      document.getElementById("tweetSection").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+      document.getElementById("premiumSection").style.display = "none";
+      document.getElementById("userProfileSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "none";
+      fetchAndRenderTweets();
+    }
+
+    document.getElementById("authButton").addEventListener("click", async () => {
+      const handle = document.getElementById("authHandle").value.trim();
+      const password = document.getElementById("authPassword").value.trim();
+      if (!handle || !password) {
+        showAuthError("Please enter both handle and password.");
+        return;
+      }
+      try {
+        const loginResponse = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ handle, password })
+        });
+        const loginData = await loginResponse.json();
+        if (loginData.success) {
+          handleSuccessfulAuth(handle);
+        } else if (loginData.error === "User not found") {
+          const signupResponse = await fetch("/api/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ handle, password })
+          });
+          const signupData = await signupResponse.json();
+          if (signupData.success) {
+            handleSuccessfulAuth(handle);
+          } else {
+            showAuthError(signupData.error || "Sign up failed.");
+          }
+        } else {
+          showAuthError(loginData.error || "Authentication failed.");
+        }
+      } catch (err) {
+        console.error(err);
+        showAuthError("An error occurred. Please try again.");
+      }
+    });
+
+    function logout() {
+      currentUser = null;
+      document.getElementById("tweetSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "none";
+      document.getElementById("premiumSection").style.display = "none";
+      document.getElementById("userProfileSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "none";
+      document.getElementById("authSection").style.display = "block";
+    }
+
+    async function postTweet(text, imageData = null, retweetOf = null, quotedTweet = null, pollData = null) {
+      const newTweet = { handle: currentUser, text, imageData, timestamp: Date.now(), poll: pollData };
+      if (retweetOf) newTweet.retweetOf = retweetOf;
+      if (quotedTweet) newTweet.quotedTweet = quotedTweet;
+      const response = await fetch("/api/tweet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newTweet)
+      });
+      const result = await response.json();
+      return result;
+    }
+
+    document.getElementById("tweetButton").addEventListener("click", async () => {
+      const text = document.getElementById("tweetText").value.trim();
+      const imageInput = document.getElementById("tweetImage");
+      if ((!text && imageInput.files.length === 0) || text.length > 280) return;
+      let imageData = null;
+      if (imageInput.files.length > 0) {
+        imageData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject("Error reading file");
+          reader.readAsDataURL(imageInput.files[0]);
+        });
+      }
+      const result = await postTweet(text, imageData);
+      if (result.success) fetchAndRenderTweets();
+      document.getElementById("tweetText").value = "";
+      document.getElementById("tweetImage").value = "";
+    });
+
+    document.getElementById("tweetText").addEventListener("input", function () {
+      const maxLength = 280;
+      const currentLength = this.value.length;
+      const remaining = maxLength - currentLength;
+      const charCount = document.getElementById("charCount");
+      charCount.textContent = remaining;
+      charCount.style.color = remaining <= 10 ? "#e0245e" : "#555";
+      document.getElementById("tweetButton").disabled = currentLength > maxLength;
+    });
+
+    document.getElementById("addPoll").addEventListener("click", () => {
+      const pollFields = document.getElementById("pollFields");
+      pollFields.style.display = pollFields.style.display === "none" ? "block" : "none";
+    });
+
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      const query = document.getElementById("searchInput").value.trim();
+      fetchAndRenderTweets(query);
+    });
+
+    async function fetchAndRenderTweets(query = "") {
+      const response = await fetch("/api/tweets");
+      const data = await response.json();
+      let tweets = data.tweets;
+      if (query) {
+        tweets = filterTweets(tweets, query);
+      }
+      tweets.sort((a, b) => b.timestamp - a.timestamp);
+      renderTweets(tweets);
+    }
+
+    function filterTweets(tweets, query) {
+      const lowerQuery = query.toLowerCase();
+      if (query.startsWith("@")) {
+        const handle = query.slice(1).toLowerCase();
+        return tweets.filter(tweet => tweet.text.toLowerCase().includes("@" + handle));
+      } else if (query.startsWith("#")) {
+        const hashtag = query.slice(1).toLowerCase();
+        return tweets.filter(tweet => tweet.text.toLowerCase().includes("#" + hashtag));
+      } else {
+        return tweets.filter(tweet => tweet.text.toLowerCase().includes(lowerQuery));
+      }
+    }
+
+    document.getElementById("submitPollTweet").addEventListener("click", async () => {
+      const text = document.getElementById("tweetText").value.trim();
+      const question = document.getElementById("pollQuestion").value.trim();
+      const option1 = document.getElementById("pollOption1").value.trim();
+      const option2 = document.getElementById("pollOption2").value.trim();
+      const imageInput = document.getElementById("tweetImage");
+      if ((!text && imageInput.files.length === 0 && !question) || text.length > 280) return;
+      if (question && (!option1 || !option2)) return;
+      let imageData = null;
+      if (imageInput.files.length > 0) {
+        imageData = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject("Error reading file");
+          reader.readAsDataURL(imageInput.files[0]);
+        });
+      }
+      const pollData = question ? { question, options: [{ text: option1, votes: 0 }, { text: option2, votes: 0 }] } : null;
+      try {
+        const result = await postTweet(text, imageData, null, null, pollData);
+        if (result.success) {
+          fetchAndRenderTweets();
+        }
+      } catch (error) {
+        console.error("Error during postTweet:", error);
+      }
+      document.getElementById("tweetText").value = "";
+      document.getElementById("tweetImage").value = "";
+      document.getElementById("pollQuestion").value = "";
+      document.getElementById("pollOption1").value = "";
+      document.getElementById("pollOption2").value = "";
+      document.getElementById("pollFields").style.display = "none";
+    });
+
+    function formatTweetText(text) {
+      const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+      const hashtagRegex = /#([a-zA-Z0-9]+)/g;
+      text = text.replace(mentionRegex, '<span class="mention">@$1</span>');
+      text = text.replace(hashtagRegex, '<span class="hashtag">#$1</span>');
+      return text;
+    }
+
+    function renderTweets(tweets) {
+      const feed = document.getElementById("tweetFeed");
+      feed.innerHTML = "";
+      tweets.forEach(tweet => {
+        const tweetDiv = document.createElement("div");
+        tweetDiv.className = "tweet";
+        if (tweet.last_retweeted_by) {
+          const retweetInfo = document.createElement("div");
+          retweetInfo.style.color = "#777";
+          retweetInfo.style.fontSize = "0.8rem";
+          retweetInfo.style.marginBottom = "5px";
+          retweetInfo.textContent = `${tweet.last_retweeted_by} reposted`;
+          tweetDiv.appendChild(retweetInfo);
+        }
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "tweet-header";
+        const profilePic = document.createElement("img");
+        profilePic.className = "tweet-profile-pic";
+        profilePic.src = tweet.profilePicture || "images/default.png";
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "tweet-username";
+        let verificationMark = "";
+        if (tweet.verified === "blue") verificationMark = '✔';
+        else if (tweet.verified === "gold") verificationMark = '✔';
+        nameSpan.textContent = tweet.handle + (verificationMark ? ` ${verificationMark}` : "");
+        nameSpan.addEventListener("click", () => showUserProfile(tweet.handle));
+        const timeSpan = document.createElement("span");
+        timeSpan.className = "tweet-timestamp";
+        timeSpan.textContent = new Date(tweet.timestamp).toLocaleString();
+        headerDiv.appendChild(profilePic);
+        headerDiv.appendChild(nameSpan);
+        headerDiv.appendChild(timeSpan);
+        const textP = document.createElement("p");
+        textP.className = "tweet-text";
+        textP.innerHTML = formatTweetText(tweet.text);
+        tweetDiv.appendChild(headerDiv);
+        tweetDiv.appendChild(textP);
+        if (tweet.imageData) {
+          const img = document.createElement("img");
+          img.src = tweet.imageData;
+          tweetDiv.appendChild(img);
+        }
+        if (tweet.poll) {
+          const pollDiv = document.createElement("div");
+          pollDiv.className = "poll-container";
+          const pollQuestion = document.createElement("p");
+          pollQuestion.textContent = tweet.poll.question;
+          pollDiv.appendChild(pollQuestion);
+          tweet.poll.options.forEach(option => {
+            const optionDiv = document.createElement("div");
+            optionDiv.className = "poll-option";
+            const optionText = document.createElement("span");
+            optionText.textContent = `${option.text} (${option.votes} votes)`;
+            const voteBtn = document.createElement("button");
+            voteBtn.className = "poll-vote-btn";
+            voteBtn.textContent = "Vote";
+            voteBtn.addEventListener("click", async () => {
+              option.votes += 1;
+              await fetch("/api/tweet/poll/vote", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: tweet.id, option: option.text })
+              });
+              fetchAndRenderTweets();
+            });
+            optionDiv.appendChild(optionText);
+            optionDiv.appendChild(voteBtn);
+            pollDiv.appendChild(optionDiv);
+          });
+          tweetDiv.appendChild(pollDiv);
+        }
+        if (tweet.quotedTweet) {
+          const quotedDiv = document.createElement("div");
+          quotedDiv.className = "quoted-tweet";
+          const qHeader = document.createElement("div");
+          qHeader.className = "tweet-header";
+          const qProfilePic = document.createElement("img");
+          qProfilePic.className = "tweet-profile-pic";
+          qProfilePic.src = tweet.quotedTweet.profilePicture || "images/default.png";
+          const qNameSpan = document.createElement("span");
+          qNameSpan.className = "tweet-username";
+          let qVerificationMark = "";
+          if (tweet.quotedTweet.verified === "blue") qVerificationMark = '✔';
+          else if (tweet.quotedTweet.verified === "gold") qVerificationMark = '✔';
+          qNameSpan.textContent = tweet.quotedTweet.handle + (qVerificationMark ? ` ${qVerificationMark}` : "");
+          qHeader.appendChild(qProfilePic);
+          qHeader.appendChild(qNameSpan);
+          const qText = document.createElement("p");
+          qText.className = "tweet-text";
+          qText.innerHTML = formatTweetText(tweet.quotedTweet.text);
+          quotedDiv.appendChild(qHeader);
+          quotedDiv.appendChild(qText);
+          tweetDiv.appendChild(quotedDiv);
+        }
+        const likeSection = document.createElement("div");
+        const likeBtn = document.createElement("button");
+        likeBtn.className = "like-btn";
+        likeBtn.textContent = "♡";
+        const likeCount = document.createElement("span");
+        likeCount.className = "like-count";
+        likeCount.textContent = tweet.likes || 0;
+        likeBtn.addEventListener("click", async () => {
+          let newLikes = likeBtn.classList.contains("liked") ? (tweet.likes || 1) - 1 : (tweet.likes || 0) + 1;
+          likeBtn.classList.toggle("liked");
+          likeBtn.textContent = likeBtn.classList.contains("liked") ? "❤️" : "♡";
+          likeCount.textContent = newLikes;
+          await fetch("/api/tweet/like", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: tweet.id, likes: newLikes })
+          });
+        });
+        likeSection.appendChild(likeBtn);
+        likeSection.appendChild(likeCount);
+        tweetDiv.appendChild(likeSection);
+        const retweetBtn = document.createElement("button");
+        retweetBtn.className = "quote-btn";
+        retweetBtn.textContent = "Retweet";
+        retweetBtn.addEventListener("click", async () => {
+          await fetch("/api/tweet/retweet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tweetId: tweet.id, handle: currentUser })
+          });
+          fetchAndRenderTweets();
+        });
+        tweetDiv.appendChild(retweetBtn);
+        const replyButton = document.createElement("button");
+        replyButton.className = "reply-btn";
+        replyButton.textContent = "Reply";
+        tweetDiv.appendChild(replyButton);
+        const replyFormDiv = document.createElement("div");
+        replyFormDiv.className = "reply-form";
+        const replyTextarea = document.createElement("textarea");
+        replyTextarea.rows = 2;
+        replyTextarea.placeholder = "Write your reply...";
+        const submitReplyBtn = document.createElement("button");
+        submitReplyBtn.textContent = "Submit Reply";
+        replyFormDiv.appendChild(replyTextarea);
+        replyFormDiv.appendChild(submitReplyBtn);
+        tweetDiv.appendChild(replyFormDiv);
+        replyButton.addEventListener("click", () => {
+          replyFormDiv.style.display = replyFormDiv.style.display === "block" ? "none" : "block";
+        });
+        submitReplyBtn.addEventListener("click", async () => {
+          const replyText = replyTextarea.value.trim();
+          if (!replyText) return;
+          const response = await fetch("/api/tweet/reply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tweetId: tweet.id, handle: currentUser, text: replyText })
+          });
+          const data = await response.json();
+          if (data.success) {
+            tweet.replies.push(data.reply);
+            const repliesDiv = renderReplies(tweet);
+            const existingReplies = tweetDiv.querySelector(".tweet-replies");
+            if (existingReplies) tweetDiv.removeChild(existingReplies);
+            tweetDiv.appendChild(repliesDiv);
+            replyTextarea.value = "";
+            replyFormDiv.style.display = "none";
+          }
+        });
+        if (tweet.replies && tweet.replies.length > 0) {
+          const repliesDiv = renderReplies(tweet);
+          tweetDiv.appendChild(repliesDiv);
+        }
+        const retweetMenuDiv = document.createElement("div");
+        retweetMenuDiv.className = "retweet-menu";
+        const quoteBtn = document.createElement("button");
+        quoteBtn.textContent = "Quote Tweet";
+        quoteBtn.addEventListener("click", () => {
+          retweetMenuDiv.style.display = "none";
+          quoteFormDiv.style.display = quoteFormDiv.style.display === "block" ? "none" : "block";
+        });
+        retweetMenuDiv.appendChild(quoteBtn);
+        const retweetToggleBtn = document.createElement("button");
+        retweetToggleBtn.textContent = "More";
+        retweetToggleBtn.className = "quote-btn";
+        retweetToggleBtn.addEventListener("click", () => {
+          retweetMenuDiv.style.display = retweetMenuDiv.style.display === "block" ? "none" : "block";
+        });
+        tweetDiv.appendChild(retweetToggleBtn);
+        tweetDiv.appendChild(retweetMenuDiv);
+        const quoteFormDiv = document.createElement("div");
+        quoteFormDiv.className = "quote-form";
+        quoteFormDiv.style.display = "none";
+        const quoteTextarea = document.createElement("textarea");
+        quoteTextarea.rows = 2;
+        quoteTextarea.placeholder = "Add your comment...";
+        const submitQuoteBtn = document.createElement("button");
+        submitQuoteBtn.textContent = "Submit Quote";
+        quoteFormDiv.appendChild(quoteTextarea);
+        quoteFormDiv.appendChild(submitQuoteBtn);
+        tweetDiv.appendChild(quoteFormDiv);
+        submitQuoteBtn.addEventListener("click", async () => {
+          const quoteText = quoteTextarea.value.trim();
+          if (!quoteText) return;
+          const newTweetData = { handle: currentUser, text: quoteText, quotedTweet: tweet, timestamp: Date.now() };
+          const response = await fetch("/api/tweet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newTweetData)
+          });
+          if ((await response.json()).success) fetchAndRenderTweets();
+        });
+        feed.appendChild(tweetDiv);
+      });
+    }
+
+    function renderReplies(tweet) {
+      const repliesDiv = document.createElement("div");
+      repliesDiv.className = "tweet-replies";
+      tweet.replies.forEach(reply => {
+        const replyDiv = document.createElement("div");
+        replyDiv.className = "reply";
+        const replyHeader = document.createElement("div");
+        replyHeader.className = "tweet-header";
+        const replyPic = document.createElement("img");
+        replyPic.className = "tweet-profile-pic";
+        replyPic.style.width = "30px";
+        replyPic.style.height = "30px";
+        replyPic.src = reply.profilePicture || "images/default.png";
+        const replyName = document.createElement("span");
+        replyName.className = "tweet-username";
+        let verificationMark = "";
+        if (reply.verified === "blue") verificationMark = '✔';
+        else if (reply.verified === "gold") verificationMark = '✔';
+        replyName.textContent = reply.handle + (verificationMark ? ` ${verificationMark}` : "");
+        const replyTime = document.createElement("span");
+        replyTime.className = "tweet-timestamp";
+        replyTime.textContent = new Date(reply.timestamp).toLocaleString();
+        replyHeader.appendChild(replyPic);
+        replyHeader.appendChild(replyName);
+        replyHeader.appendChild(replyTime);
+        const replyText = document.createElement("p");
+        replyText.className = "tweet-text";
+        replyText.innerHTML = formatTweetText(reply.text);
+        replyDiv.appendChild(replyHeader);
+        replyDiv.appendChild(replyText);
+        const replyLikeSection = document.createElement("div");
+        const replyLikeBtn = document.createElement("button");
+        replyLikeBtn.className = "like-btn";
+        replyLikeBtn.textContent = "♡";
+        const replyLikeCount = document.createElement("span");
+        replyLikeCount.className = "like-count";
+        replyLikeCount.textContent = reply.likes || 0;
+        replyLikeBtn.addEventListener("click", async () => {
+          let newLikes = replyLikeBtn.classList.contains("liked") ? (reply.likes || 1) - 1 : (reply.likes || 0) + 1;
+          replyLikeBtn.classList.toggle("liked");
+          replyLikeBtn.textContent = replyLikeBtn.classList.contains("liked") ? "❤️" : "♡";
+          replyLikeCount.textContent = newLikes;
+          await fetch("/api/tweet/reply/like", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tweetId: tweet.id, replyId: reply.id, likes: newLikes })
+          });
+        });
+        replyLikeSection.appendChild(replyLikeBtn);
+        replyLikeSection.appendChild(replyLikeCount);
+        replyDiv.appendChild(replyLikeSection);
+        repliesDiv.appendChild(replyDiv);
+      });
+      return repliesDiv;
+    }
+
+    async function fetchProfile(handle) {
+      const response = await fetch(`/api/profile?handle=${handle}`);
+      const data = await response.json();
+      return data.success ? data.profile : null;
+    }
+
+    async function showEditableProfile() {
+      if (!currentUser) return;
+      const profile = await fetchProfile(currentUser);
+      if (profile) {
+        document.getElementById("profilePicPreview").src = profile.profilePicture || "images/default.png";
+        document.getElementById("profileBio").value = profile.bio || "";
+      }
+      document.getElementById("tweetSection").style.display = "none";
+      document.getElementById("userProfileSection").style.display = "none";
+      document.getElementById("premiumSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "block";
+    }
+
+    async function showUserProfile(username) {
+      const profile = await fetchProfile(username);
+      if (profile) {
+        document.getElementById("userProfileName").textContent = username;
+        document.getElementById("userProfilePic").src = profile.profilePicture || "images/default.png";
+        document.getElementById("userProfileBio").textContent = profile.bio || "";
+        const response = await fetch("/api/tweets");
+        const data = await response.json();
+        const filteredTweets = data.tweets.filter(t => t.handle.toLowerCase() === username.toLowerCase());
+        const userTweetsDiv = document.getElementById("userTweets");
+        userTweetsDiv.innerHTML = "";
+        renderUserTweets(filteredTweets, userTweetsDiv);
+      }
+      document.getElementById("tweetSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "none";
+      document.getElementById("premiumSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "none";
+      document.getElementById("userProfileSection").style.display = "block";
+    }
+
+    function renderUserTweets(tweets, container) {
+      tweets.forEach(tweet => {
+        const tweetDiv = document.createElement("div");
+        tweetDiv.className = "tweet";
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "tweet-header";
+        const profilePic = document.createElement("img");
+        profilePic.className = "tweet-profile-pic";
+        profilePic.src = tweet.profilePicture || "images/default.png";
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "tweet-username";
+        let verificationMark = "";
+        if (tweet.verified === "blue") verificationMark = '✔';
+        else if (tweet.verified === "gold") verificationMark = '✔';
+        nameSpan.textContent = tweet.handle + (verificationMark ? ` ${verificationMark}` : "");
+        const timeSpan = document.createElement("span");
+        timeSpan.className = "tweet-timestamp";
+        timeSpan.textContent = new Date(tweet.timestamp).toLocaleString();
+        headerDiv.appendChild(profilePic);
+        headerDiv.appendChild(nameSpan);
+        headerDiv.appendChild(timeSpan);
+        const textP = document.createElement("p");
+        textP.className = "tweet-text";
+        textP.innerHTML = formatTweetText(tweet.text);
+        tweetDiv.appendChild(headerDiv);
+        tweetDiv.appendChild(textP);
+        if (tweet.imageData) {
+          const img = document.createElement("img");
+          img.src = tweet.imageData;
+          tweetDiv.appendChild(img);
+        }
+        container.appendChild(tweetDiv);
+      });
+    }
+
+    function backToMainFeed() {
+      document.getElementById("userProfileSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "none";
+      document.getElementById("tweetSection").style.display = "block";
+      fetchAndRenderTweets();
+    }
+
+    function showPremiumSection() {
+      document.getElementById("tweetSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "none";
+      document.getElementById("userProfileSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "none";
+      document.getElementById("premiumSection").style.display = "block";
+    }
+
+    function subscribePlan(plan) {
+      if (!currentUser) return;
+      fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle: currentUser, verified: plan })
+      }).then(response => response.json()).then(data => {
+        if (data.success) {
+          document.getElementById("premiumMessage").textContent = 
+            plan === "blue" ? "You are now a Premium subscriber (blue check)!" : "You are now a Premium+ subscriber (gold check)!";
+          fetchAndRenderTweets();
+        }
+      });
+    }
+
+    document.getElementById("saveBio").addEventListener("click", async () => {
+      if (!currentUser) return;
+      const bioText = document.getElementById("profileBio").value.trim();
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle: currentUser, bio: bioText })
+      });
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById("profileMessage").textContent = "Bio saved successfully!";
+        setTimeout(() => document.getElementById("profileMessage").textContent = "", 3000);
+      }
+    });
+
+    document.getElementById("updateProfilePic").addEventListener("click", async () => {
+      if (!currentUser) return;
+      const fileInput = document.getElementById("profilePicUpload");
+      if (fileInput.files.length === 0) return;
+      const imageData = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject("Error reading file");
+        reader.readAsDataURL(fileInput.files[0]);
+      });
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ handle: currentUser, profilePicture: imageData })
+      });
+      const data = await response.json();
+      if (data.success) {
+        document.getElementById("profilePicPreview").src = imageData;
+        document.getElementById("profileMessage").textContent = "Profile picture updated successfully.";
+        fetchAndRenderTweets();
+      }
+    });
+
+    async function showAdminSection() {
+      const password = prompt("Enter admin password:");
+      if (password !== "1612") {
+        alert("Incorrect admin password.");
+        return;
+      }
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      if (data.success) {
+        const accountList = document.getElementById("accountList");
+        accountList.innerHTML = "";
+        data.users.forEach(user => {
+          const entry = document.createElement("div");
+          entry.className = "account-entry";
+          const info = document.createElement("span");
+          info.textContent = `${user.handle} - ${user.password}${user.banned ? " (Banned)" : ""}`;
+          const banBtn = document.createElement("button");
+          banBtn.className = "ban-btn";
+          banBtn.textContent = user.banned ? "Banned" : "Ban";
+          banBtn.disabled = user.banned;
+          banBtn.addEventListener("click", async () => {
+            const banResponse = await fetch("/api/ban", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ handle: user.handle })
+            });
+            const banData = await banResponse.json();
+            if (banData.success) {
+              banBtn.textContent = "Banned";
+              banBtn.disabled = true;
+              info.textContent = `${user.handle} - ${user.password} (Banned)`;
+            }
+          });
+          entry.appendChild(info);
+          entry.appendChild(banBtn);
+          accountList.appendChild(entry);
+        });
+      }
+      document.getElementById("tweetSection").style.display = "none";
+      document.getElementById("profileSection").style.display = "none";
+      document.getElementById("premiumSection").style.display = "none";
+      document.getElementById("userProfileSection").style.display = "none";
+      document.getElementById("adminSection").style.display = "block";
+    }
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

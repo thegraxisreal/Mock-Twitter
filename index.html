@@ -1,0 +1,227 @@
+Home
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mock Twitter - Home</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <style>
+    /* Base styles (similar to Mock Twitter) */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fafafa;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .navbar {
+      background-color: #fff;
+      border-bottom: 1px solid #e6e6e6;
+    }
+    .navbar-brand {
+      font-weight: bold;
+      color: #333;
+    }
+    .btn-custom {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .btn-custom:hover {
+      background-color: #555;
+      color: #fff;
+    }
+
+    /* Hero section */
+    .hero {
+      text-align: center;
+      padding: 100px 20px;
+      background: linear-gradient(135deg, #fafafa 0%, #e6e6e6 100%);
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      animation: fadeInDown 1s ease-out;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      margin: 20px 0;
+      animation: fadeInUp 1s ease-out 0.5s;
+      animation-fill-mode: backwards;
+    }
+    .hero .btn-custom {
+      animation: bounceIn 1s ease-out 1s;
+      animation-fill-mode: backwards;
+    }
+
+    /* Features section */
+    .features {
+      padding: 60px 20px;
+      background-color: #fff;
+      border-top: 1px solid #e6e6e6;
+    }
+    .feature-card {
+      text-align: center;
+      padding: 20px;
+      margin-bottom: 30px;
+      opacity: 0;
+      animation: slideInUp 0.8s ease-out forwards;
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.2s; }
+    .feature-card:nth-child(2) { animation-delay: 0.4s; }
+    .feature-card:nth-child(3) { animation-delay: 0.6s; }
+    .feature-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+    .feature-card p {
+      color: #777;
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 15px;
+      transition: transform 0.3s ease;
+    }
+    .feature-card:hover .feature-icon {
+      transform: scale(1.2);
+    }
+
+    /* CTA section */
+    .cta {
+      text-align: center;
+      padding: 60px 20px;
+      background-color: #333;
+      color: #fff;
+    }
+    .cta h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      animation: fadeIn 1s ease-out;
+    }
+    .cta .btn-custom {
+      background-color: #fff;
+      color: #333;
+      animation: pulse 2s infinite;
+    }
+    .cta .btn-custom:hover {
+      background-color: #e6e6e6;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #fff;
+      border-top: 1px solid #e6e6e6;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: scale(0.3); }
+      50% { opacity: 1; transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(100px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+      .hero p { font-size: 1rem; }
+      .features { padding: 40px 10px; }
+      .cta h2 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#">Mock Twitter</a>
+      <div class="ml-auto">
+        <a href="home.html" class="btn btn-custom mr-2">Log In</a>
+        <a href="home.html" class="btn btn-custom">Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>Welcome to Mock Twitter</h1>
+      <p>A minimalist social platform to share your thoughts, connect with others, and enjoy a clutter-free experience.</p>
+      <a href="home.html" class="btn btn-custom">Get Started</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">✍️</div>
+            <h3>Simple Posting</h3>
+            <p>Share your ideas with a 280-character limit, photos, or polls in a clean, distraction-free interface.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3>Engage Easily</h3>
+            <p>Like, reply, retweet, or quote posts with intuitive controls and real-time interaction.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>Premium Perks</h3>
+            <p>Unlock blue or gold checkmarks with premium subscriptions for a verified presence.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Call to Action Section -->
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to Tweet?</h2>
+      <a href="home.html" class="btn btn-custom">Join Mock Twitter Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Mock Twitter. Built with simplicity in mind.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
