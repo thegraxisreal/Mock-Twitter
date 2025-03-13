@@ -1,6 +1,7 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const fetch = require('node-fetch');
+const fs = require('fs').promises; // Add fs.promises for async file operations
 const app = express();
 const PORT = 3000;
 
@@ -8,6 +9,67 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// In-memory storage (will be loaded from/saved to files)
+let users = {};
+let tweets = [];
+let classrooms = []; // Added for classrooms
+let announcements = [];
+
+// Function to save data to JSON files
+async function saveData() {
+  try {
+    await fs.writeFile('users.json', JSON.stringify(users, null, 2));
+    await fs.writeFile('tweets.json', JSON.stringify(tweets, null, 2));
+    await fs.writeFile('classrooms.json', JSON.stringify(classrooms, null, 2)); // Added for classrooms
+    await fs.writeFile('announcements.json', JSON.stringify(announcements, null, 2));
+    console.log('Data saved to users.json, tweets.json, classrooms.json, and announcements.json');
+  } catch (err) {
+    console.error('Error saving data:', err);
+  }
+}
+
+// Function to load data from JSON files
+async function loadData() {
+  try {
+    const usersData = await fs.readFile('users.json', 'utf8');
+    users = JSON.parse(usersData);
+    console.log('Users loaded from users.json');
+  } catch (err) {
+    if (err.code === 'ENOENT') console.log('No users.json found, starting fresh');
+    else console.error('Error loading users:', err);
+  }
+  try {
+    const tweetsData = await fs.readFile('tweets.json', 'utf8');
+    tweets = JSON.parse(tweetsData);
+    console.log('Tweets loaded from tweets.json');
+  } catch (err) {
+    if (err.code === 'ENOENT') console.log('No tweets.json found, starting fresh');
+    else console.error('Error loading tweets:', err);
+  }
+  try {
+    const classroomsData = await fs.readFile('classrooms.json', 'utf8');
+    classrooms = JSON.parse(classroomsData);
+    console.log('Classrooms loaded from classrooms.json');
+  } catch (err) {
+    if (err.code === 'ENOENT') console.log('No classrooms.json found, starting fresh');
+    else console.error('Error loading classrooms:', err);
+  }
+  try {
+    const announcementsData = await fs.readFile('announcements.json', 'utf8');
+    announcements = JSON.parse(announcementsData);
+    console.log('Announcements loaded from announcements.json');
+  } catch (err) {
+    if (err.code === 'ENOENT') console.log('No announcements.json found, starting fresh');
+    else console.error('Error loading announcements:', err);
+  }
+}
+
+// Load data when the server starts
+loadData().then(() => {
+  console.log('Initial data load complete');
+});
+
+// Your existing endpoints
 app.post('/api/deepseek', (req, res) => {
   const userInput = req.body.input;
   const child = spawn('ollama', ['run', 'deepseek-r1:14b']);
@@ -39,8 +101,9 @@ app.get('/proxy', async (req, res) => {
   }
 });
 
-app.post('/admin/shutdown', (req, res) => {
+app.post('/admin/shutdown', async (req, res) => {
   res.send('Shutting down...');
+  await saveData(); // Save data before shutting down
   process.exit(0);
 });
 
@@ -54,9 +117,6 @@ io.on('connection', (socket) => {
   socket.on('loud noise', () => io.emit('loud noise'));
   socket.on('disconnect', () => console.log('A user disconnected'));
 });
-
-const users = {};
-const tweets = [];
 
 app.post('/api/signup', (req, res) => {
   const { handle, password } = req.body;
@@ -142,6 +202,7 @@ app.post('/api/tweet/retweet', (req, res) => {
   io.emit('tweet retweeted', tweet);
   return res.json({ success: true, tweet });
 });
+
 app.patch('/api/tweet/poll/vote', (req, res) => {
   const { id, option } = req.body;
   const tweet = tweets.find(t => t.id === id);
@@ -230,34 +291,176 @@ app.post('/api/ban', (req, res) => {
   return res.json({ success: true, message: "User banned" });
 });
 
-app.get('/proxy', async (req, res) => {
-  const targetUrl = req.query.url;
-  if (!targetUrl) {
-    return res.status(400).send("URL parameter is required");
-  }
-  try {
-    const response = await fetch(targetUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-      }
+app.get('/api/trending', (req, res) => {
+  const hashtagCount = {};
+  tweets.forEach(tweet => {
+    const hashtags = tweet.text.match(/#([a-zA-Z0-9]+)/g) || [];
+    hashtags.forEach(tag => {
+      const cleanTag = tag.toLowerCase();
+      hashtagCount[cleanTag] = (hashtagCount[cleanTag] || 0) + 1;
     });
-    if (!response.ok) {
-      return res.status(response.status).send(`Error fetching URL: ${response.status}`);
-    }
-    const contentType = response.headers.get("content-type") || "text/html";
-    res.set("Content-Type", contentType);
-    response.body.pipe(res); // streams the stuff back to server
-  } catch (err) {
-    console.error("Proxy error:", err.message);
-    res.status(500).send("Error fetching the requested URL");
+  });
+  const trending = Object.entries(hashtagCount)
+    .filter(([tag, count]) => count >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+  res.json({ success: true, trending });
+});
+
+// New endpoints for classrooms
+app.get('/api/classrooms', (req, res) => {
+  res.json({ success: true, classrooms });
+});
+
+app.post('/api/classrooms', (req, res) => {
+  const { name, instructor } = req.body;
+  if (!name || !instructor) {
+    return res.status(400).json({ success: false, error: "Class name and instructor required" });
   }
+  const newClassroom = {
+    id: Date.now(),
+    name,
+    instructor,
+    timestamp: Date.now()
+  };
+  classrooms.push(newClassroom);
+  io.emit('new classroom', newClassroom); // Real-time update for all clients
+  saveData(); // Save to classrooms.json immediately
+  return res.json({ success: true, classroom: newClassroom });
 });
 
-http.listen(3000, '0.0.0.0', () => {
-  console.log('Server running on port 3000');
+app.post('/api/announcements', (req, res) => {
+    const { classId, text, author, authorRole } = req.body;
+    if (!classId || !text || !author) {
+        return res.status(400).json({ success: false, error: "Missing required fields" });
+    }
+
+    const newAnnouncement = {
+        id: Date.now().toString(),
+        classId,
+        text,
+        author,
+        authorRole,
+        timestamp: Date.now()
+    };
+
+    announcements.push(newAnnouncement);
+    io.emit('new announcement', newAnnouncement);
+    saveData();
+    return res.json({ success: true, announcement: newAnnouncement });
 });
 
-http.listen(PORT, () => {
+app.get('/api/announcements/:classId', (req, res) => {
+    const { classId } = req.params;
+    const classAnnouncements = announcements
+        .filter(a => a.classId === classId)
+        .sort((a, b) => b.timestamp - a.timestamp);
+    return res.json({ success: true, announcements: classAnnouncements });
+});
+
+app.delete('/api/announcements/:id', (req, res) => {
+    const { id } = req.params;
+    const index = announcements.findIndex(a => a.id === id);
+    if (index === -1) {
+        return res.status(404).json({ success: false, error: "Announcement not found" });
+    }
+    
+    announcements.splice(index, 1);
+    io.emit('announcement deleted', id);
+    saveData();
+    return res.json({ success: true });
+});
+
+// Add a tweet to user's bookmarks
+app.post('/api/bookmark', (req, res) => {
+  const { handle, tweetId } = req.body;
+  if (!handle || !tweetId) {
+    return res.json({ success: false, error: 'Handle and tweet ID are required' });
+  }
+
+  const user = users[handle.toLowerCase()];
+  if (!user) {
+    return res.json({ success: false, error: 'User not found' });
+  }
+
+  // Initialize bookmarks array if it doesn't exist
+  if (!user.bookmarks) {
+    user.bookmarks = [];
+  }
+
+  // Check if tweet is already bookmarked
+  if (user.bookmarks.includes(tweetId)) {
+    return res.json({ success: false, error: 'Tweet is already bookmarked' });
+  }
+
+  // Add tweet to bookmarks
+  user.bookmarks.push(tweetId);
+  saveData();
+  
+  return res.json({ success: true });
+});
+
+// Remove a tweet from user's bookmarks
+app.delete('/api/bookmark', (req, res) => {
+  const { handle, tweetId } = req.body;
+  if (!handle || !tweetId) {
+    return res.json({ success: false, error: 'Handle and tweet ID are required' });
+  }
+
+  const user = users[handle.toLowerCase()];
+  if (!user) {
+    return res.json({ success: false, error: 'User not found' });
+  }
+
+  // Check if user has bookmarks
+  if (!user.bookmarks || !user.bookmarks.includes(tweetId)) {
+    return res.json({ success: false, error: 'Tweet is not bookmarked' });
+  }
+
+  // Remove tweet from bookmarks
+  user.bookmarks = user.bookmarks.filter(id => id !== tweetId);
+  saveData();
+  
+  return res.json({ success: true });
+});
+
+// Get user's bookmarked tweets
+app.get('/api/bookmarks', (req, res) => {
+  const handle = req.query.handle;
+  if (!handle) {
+    return res.json({ success: false, error: 'Handle is required' });
+  }
+
+  const user = users[handle.toLowerCase()];
+  if (!user) {
+    return res.json({ success: false, error: 'User not found' });
+  }
+
+  // If user has no bookmarks, return empty array
+  if (!user.bookmarks || user.bookmarks.length === 0) {
+    return res.json({ success: true, bookmarks: [] });
+  }
+
+  // Get all bookmarked tweets
+  const bookmarkedTweets = tweets.filter(tweet => user.bookmarks.includes(tweet.id));
+  
+  return res.json({ success: true, bookmarks: bookmarkedTweets });
+});
+
+// Handle process signals for graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('Received SIGINT, saving data...');
+  await saveData();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('Received SIGTERM, saving data...');
+  await saveData();
+  process.exit(0);
+});
+
+// Start the server
+http.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Classroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #e8f0fe;
+            --text-color: #3c4043;
+            --border-color: #dadce0;
+            --hover-color: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--secondary-color);
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .login-card h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .auth-toggle {
+            margin-bottom: 20px;
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .auth-toggle-btn {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: var(--text-color);
+            position: relative;
+        }
+
+        .auth-toggle-btn.active {
+            color: var(--primary-color);
+        }
+
+        .auth-toggle-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .error-message {
+            color: #d93025;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            text-align: left;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .login-form button:hover {
+            background-color: #1557b0;
+        }
+
+        .app-container {
+            display: none;
+        }
+
+        .header {
+            background-color: white;
+            padding: 12px 24px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-icon {
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .logo {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+        }
+
+        .main-container {
+            display: flex;
+            margin-top: 64px;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width: 256px;
+            background-color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: calc(100vh - 64px);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-item:hover {
+            background-color: var(--hover-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border-top-right-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+
+        .main-content {
+            margin-left: 256px;
+            padding: 24px;
+            flex: 1;
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 24px;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .class-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .class-header {
+            height: 100px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+
+        .class-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .class-instructor {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .class-body {
+            padding: 20px;
+        }
+
+        .class-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .primary-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .secondary-button {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        .create-class-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+
+        .modal-header {
+            margin-bottom: 24px;
+        }
+
+        .modal-form input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: #323232;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .class-code {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 8px;
+        }
+
+        .class-view-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .class-view-content {
+            background: white;
+            margin: 64px auto;
+            padding: 32px;
+            border-radius: 8px;
+            width: 800px;
+            max-width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .announcement-section {
+            margin-top: 24px;
+        }
+
+        .announcement-form {
+            margin-bottom: 24px;
+        }
+
+        .announcement-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .announcement {
+            background: var(--secondary-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .announcement-author {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .announcement-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .delete-announcement {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: #d93025;
+            cursor: pointer;
+            display: none;
+        }
+
+        .announcement:hover .delete-announcement.teacher {
+            display: block;
+        }
+
+        /* Class view tabs */
+        .class-view-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-top: 20px;
+        }
+
+        .class-view-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            position: relative;
+            color: var(--text-color);
+        }
+
+        .class-view-tab:hover {
+            background-color: var(--hover-color);
+        }
+
+        .class-view-tab.active {
+            color: var(--primary-color);
+        }
+
+        .class-view-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .class-view-content {
+            padding: 24px 0;
+        }
+
+        /* Classwork styles */
+        .classwork-actions {
+            margin-bottom: 20px;
+        }
+
+        .classwork-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .classwork-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .classwork-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-right: 16px;
+        }
+
+        .classwork-details {
+            flex: 1;
+        }
+
+        .classwork-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .classwork-meta {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Assignment view */
+        .assignment-view {
+            max-width: 800px;
+        }
+
+        .assignment-meta {
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .assignment-description {
+            margin: 24px 0;
+            padding: 16px;
+            background-color: var(--secondary-color);
+            border-radius: 8px;
+        }
+
+        .assignment-submission {
+            margin-top: 24px;
+        }
+
+        .assignment-submission h3 {
+            margin-bottom: 16px;
+        }
+
+        .assignment-submission textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: vertical;
+            margin-bottom: 16px;
+        }
+
+        .submission-item {
+            background-color: var(--secondary-color);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .submission-author {
+            font-weight: 500;
+        }
+
+        .submission-time {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .submission-text {
+            margin-bottom: 16px;
+        }
+
+        .submission-grading {
+            display: flex;
+            align-items: center;
+        }
+
+        .grade-input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin-right: 4px;
+        }
+
+        /* People styles */
+        .people-category {
+            margin-bottom: 24px;
+        }
+
+        .people-category h3 {
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .person-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .person-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+        }
+
+        /* Grades styles */
+        .grades-table-container {
+            overflow-x: auto;
+        }
+
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .grades-table th, .grades-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .grades-table th {
+            background-color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .submitted-no-grade {
+            color: var(--primary-color);
+        }
+
+        .missing {
+            color: #d93025;
+        }
+
+        .empty-state {
+            padding: 24px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <h1>Classroom</h1>
+            <div class="auth-toggle">
+                <button class="auth-toggle-btn active" onclick="showForm('signin')">Sign In</button>
+                <button class="auth-toggle-btn" onclick="showForm('signup')">Sign Up</button>
+            </div>
+            
+            <form class="auth-form active" id="signinForm">
+                <div class="form-group">
+                    <label for="signinEmail">Email</label>
+                    <input type="email" id="signinEmail" required>
+                    <div class="error-message" id="signinEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signinPassword">Password</label>
+                    <input type="password" id="signinPassword" required>
+                    <div class="error-message" id="signinPasswordError"></div>
+                </div>
+                <button type="submit" class="action-button primary-button">Sign In</button>
+            </form>
+
+            <form class="auth-form" id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required>
+                    <div class="error-message" id="signupNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                    <div class="error-message" id="signupEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                    <div class="error-message" id="signupPasswordError"></div>
+                </div>
+                <button type="submit" class="action-button primary-button">Sign Up</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <header class="header">
+            <div class="header-left">
+                <i class="fas fa-bars menu-icon"></i>
+                <a href="#" class="logo">Classroom</a>
+            </div>
+            <div class="header-right">
+                <button class="action-button primary-button" onclick="showCreateClassModal()">
+                    <i class="fas fa-plus"></i> Create Class
+                </button>
+                <div class="user-profile">
+                    <div class="avatar" id="userAvatar"></div>
+                    <span id="userName"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <nav class="sidebar">
+                <div class="sidebar-item active">
+                    <i class="fas fa-home"></i>
+                    Classes
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-calendar"></i>
+                    Calendar
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-tasks"></i>
+                    To-do
+                </div>
+                <div class="sidebar-item">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </div>
+            </nav>
+
+            <main class="main-content">
+                <div class="class-grid" id="classGrid"></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Class Modal -->
+    <div class="create-class-modal" id="createClassModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Class</h2>
+            </div>
+            <form class="modal-form" id="createClassForm">
+                <input type="text" id="className" placeholder="Class name (required)" required>
+                <input type="text" id="section" placeholder="Section">
+                <input type="text" id="subject" placeholder="Subject">
+                <input type="text" id="room" placeholder="Room">
+                <div class="modal-actions">
+                    <button type="button" class="action-button secondary-button" onclick="hideCreateClassModal()">Cancel</button>
+                    <button type="submit" class="action-button primary-button">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Class View Modal -->
+    <div class="class-view-modal" id="classViewModal">
+        <div class="class-view-content">
+            <div class="modal-header">
+                <h2 id="classViewTitle"></h2>
+                <div id="classViewCode"></div>
+            </div>
+            <div class="class-view-tabs" id="classViewTabs">
+                <!-- Tabs will be dynamically added here -->
+            </div>
+            <div class="class-view-content" id="classViewContent">
+                <!-- Content will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock user data (replace with actual authentication)
+        let users = [
+            { email: 'teacher@example.com', password: 'password123', name: 'John Doe', role: 'teacher' },
+            { email: 'student@example.com', password: 'password123', name: 'Jane Smith', role: 'student' }
+        ];
+
+        let currentUser = null;
+        let classes = [];
+        
+        // Add this function to generate class codes
+        function generateClassCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+
+        function showForm(formType) {
+            const signinForm = document.getElementById('signinForm');
+            const signupForm = document.getElementById('signupForm');
+            const buttons = document.querySelectorAll('.auth-toggle-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (formType === 'signin') {
+                signinForm.classList.add('active');
+                signupForm.classList.remove('active');
+                buttons[0].classList.add('active');
+            } else {
+                signinForm.classList.remove('active');
+                signupForm.classList.add('active');
+                buttons[1].classList.add('active');
+            }
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function clearErrors() {
+            const errorElements = document.querySelectorAll('.error-message');
+            errorElements.forEach(element => {
+                element.style.display = 'none';
+                element.textContent = '';
+            });
+        }
+
+        // Sign In handling
+        document.getElementById('signinForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const email = document.getElementById('signinEmail').value;
+            const password = document.getElementById('signinPassword').value;
+
+            if (!validateEmail(email)) {
+                showError('signinEmailError', 'Please enter a valid email address');
+                return;
+            }
+
+            const user = users.find(u => u.email === email && u.password === password);
+            if (user) {
+                currentUser = user;
+                showToast('Successfully signed in!');
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'block';
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userAvatar').textContent = user.name.charAt(0);
+                updateHeaderActions();
+                loadClasses();
+            } else {
+                showError('signinPasswordError', 'Invalid email or password');
+            }
+        });
+
+        // Sign Up handling
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            // Automatically determine role based on email
+            const role = email.toLowerCase().includes('you') ? 'teacher' : 'student';
+
+            if (name.length < 2) {
+                showError('signupNameError', 'Name must be at least 2 characters long');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showError('signupEmailError', 'Please enter a valid email address');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('signupPasswordError', 'Password must be at least 6 characters long');
+                return;
+            }
+
+            if (users.some(u => u.email === email)) {
+                showError('signupEmailError', 'Email already exists');
+                return;
+            }
+
+            const newUser = { email, password, name, role };
+            users.push(newUser);
+            
+            // Auto sign in
+            currentUser = newUser;
+            showToast('Account created successfully!');
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+            document.getElementById('userName').textContent = newUser.name;
+            document.getElementById('userAvatar').textContent = newUser.name.charAt(0);
+            updateHeaderActions();
+            loadClasses();
+        });
+
+        // Class management
+        async function loadClasses() {
+            renderClasses();
+        }
+
+        function renderClasses() {
+            const grid = document.getElementById('classGrid');
+            grid.innerHTML = '';
+
+            classes.forEach(cls => {
+                const card = document.createElement('div');
+                card.className = 'class-card';
+                card.innerHTML = `
+                    <div class="class-header" style="background-color: ${cls.color || '#1a73e8'}">
+                        <div class="class-title">${cls.name}</div>
+                        <div class="class-instructor">${cls.instructor}</div>
+                        <div class="class-code">Code: ${cls.classCode}</div>
+                    </div>
+                    <div class="class-body">
+                        <div class="class-actions">
+                            <button class="action-button primary-button" onclick="showClassView('${cls.classCode}')">Open</button>
+                            <button class="action-button secondary-button" onclick="shareClass('${cls.classCode}')">Share</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Modal handling
+        function showCreateClassModal() {
+            document.getElementById('createClassModal').style.display = 'flex';
+        }
+
+        function hideCreateClassModal() {
+            document.getElementById('createClassModal').style.display = 'none';
+            document.getElementById('createClassForm').reset();
+        }
+
+        document.getElementById('createClassForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (currentUser.role !== 'teacher') {
+                showToast('Only teachers can create classes');
+                return;
+            }
+
+            const className = document.getElementById('className').value;
+            const section = document.getElementById('section').value;
+            const subject = document.getElementById('subject').value;
+            const room = document.getElementById('room').value;
+            
+            // Generate a random color for the class header
+            const colors = ['#1a73e8', '#4285f4', '#34a853', '#fbbc05', '#ea4335', '#673ab7', '#3f51b5', '#009688'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            const classCode = generateClassCode();
+            const newClass = {
+                id: Date.now().toString(),
+                name: className,
+                section: section,
+                subject: subject,
+                room: room,
+                instructor: currentUser.name,
+                classCode: classCode,
+                color: randomColor,
+                createdBy: currentUser.email,
+                students: [],
+                assignments: [],
+                materials: [],
+                announcements: []
+            };
+
+            classes.push(newClass);
+            hideCreateClassModal();
+            loadClasses();
+            showToast('Class created successfully!');
+        });
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = (event) => {
+            const modal = document.getElementById('createClassModal');
+            if (event.target === modal) {
+                hideCreateClassModal();
+            }
+            
+            const classViewModal = document.getElementById('classViewModal');
+            if (event.target === classViewModal) {
+                hideClassView();
+            }
+            
+            const joinModal = document.getElementById('joinClassModal');
+            if (joinModal && event.target === joinModal) {
+                hideJoinClassModal();
+            }
+        };
+
+        // Add join class functionality
+        function showJoinClassModal() {
+            const modal = document.createElement('div');
+            modal.className = 'create-class-modal';
+            modal.id = 'joinClassModal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Join Class</h2>
+                    </div>
+                    <form class="modal-form" id="joinClassForm">
+                        <input type="text" id="classCode" placeholder="Enter class code" required>
+                        <div class="modal-actions">
+                            <button type="button" class="action-button secondary-button" onclick="hideJoinClassModal()">Cancel</button>
+                            <button type="submit" class="action-button primary-button">Join</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+            
+            // Add event listener to the form
+            document.getElementById('joinClassForm').addEventListener('submit', joinClass);
+        }
+
+        function hideJoinClassModal() {
+            const modal = document.getElementById('joinClassModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function joinClass(e) {
+            e.preventDefault();
+            const classCode = document.getElementById('classCode').value.trim().toUpperCase();
+            
+            // Find the class with the given code
+            const classToJoin = classes.find(c => c.classCode === classCode);
+            
+            if (!classToJoin) {
+                showToast('Class not found. Please check the class code.');
+                return;
+            }
+            
+            // Check if student is already enrolled
+            if (classToJoin.students && classToJoin.students.includes(currentUser.email)) {
+                showToast('You are already enrolled in this class.');
+                hideJoinClassModal();
+                return;
+            }
+            
+            // Add student to the class
+            if (!classToJoin.students) {
+                classToJoin.students = [];
+            }
+            classToJoin.students.push(currentUser.email);
+            
+            hideJoinClassModal();
+            showToast('Successfully joined the class!');
+            loadClasses();
+        }
+
+        // Update header right section based on user role
+        function updateHeaderActions() {
+            const headerRight = document.querySelector('.header-right');
+            const actionButton = headerRight.querySelector('.action-button');
+            
+            if (currentUser.role === 'teacher') {
+                actionButton.innerHTML = '<i class="fas fa-plus"></i> Create Class';
+                actionButton.onclick = showCreateClassModal;
+            } else {
+                actionButton.innerHTML = '<i class="fas fa-plus"></i> Join Class';
+                actionButton.onclick = showJoinClassModal;
+            }
+        }
+
+        // Add class view functionality
+        function showClassView(classCode) {
+            const classData = classes.find(c => c.classCode === classCode);
+            if (!classData) {
+                showToast('Class not found');
+                return;
+            }
+            
+            const modal = document.getElementById('classViewModal');
+            const title = document.getElementById('classViewTitle');
+            const code = document.getElementById('classViewCode');
+            
+            // Store class code in the title element for reference
+            title.textContent = classData.name;
+            title.dataset.classCode = classData.classCode;
+            code.textContent = `Class Code: ${classData.classCode}`;
+            
+            // Load announcements
+            renderAnnouncements(classData);
+            
+            // Show tabs based on user role
+            updateClassViewTabs(classData);
+            
+            modal.style.display = 'block';
+        }
+
+        function hideClassView() {
+            document.getElementById('classViewModal').style.display = 'none';
+        }
+        
+        function updateClassViewTabs(classData) {
+            const tabsContainer = document.getElementById('classViewTabs');
+            tabsContainer.innerHTML = '';
+            
+            const tabs = [
+                { id: 'stream', icon: 'fas fa-stream', text: 'Stream' },
+                { id: 'classwork', icon: 'fas fa-book', text: 'Classwork' },
+                { id: 'people', icon: 'fas fa-users', text: 'People' }
+            ];
+            
+            // Add additional tabs for teachers
+            if (currentUser.role === 'teacher') {
+                tabs.push({ id: 'grades', icon: 'fas fa-chart-bar', text: 'Grades' });
+            }
+            
+            tabs.forEach(tab => {
+                const tabElement = document.createElement('div');
+                tabElement.className = 'class-view-tab';
+                tabElement.dataset.tab = tab.id;
+                tabElement.innerHTML = `<i class="${tab.icon}"></i> ${tab.text}`;
+                tabElement.addEventListener('click', () => switchClassTab(tab.id, classData));
+                tabsContainer.appendChild(tabElement);
+            });
+            
+            // Activate stream tab by default
+            document.querySelector('.class-view-tab[data-tab="stream"]').classList.add('active');
+            switchClassTab('stream', classData);
+        }
+        
+        function switchClassTab(tabId, classData) {
+            // Update active tab
+            document.querySelectorAll('.class-view-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`.class-view-tab[data-tab="${tabId}"]`).classList.add('active');
+            
+            // Update content
+            const contentContainer = document.getElementById('classViewContent');
+            
+            switch(tabId) {
+                case 'stream':
+                    contentContainer.innerHTML = `
+                        <div class="announcement-section">
+                            <form class="announcement-form" id="announcementForm">
+                                <textarea id="announcementText" placeholder="Share something with your class..." required></textarea>
+                                <button type="submit" class="action-button primary-button">Post</button>
+                            </form>
+                            <div id="announcements"></div>
+                        </div>
+                    `;
+                    document.getElementById('announcementForm').addEventListener('submit', (e) => postAnnouncement(e, classData));
+                    renderAnnouncements(classData);
+                    break;
+                    
+                case 'classwork':
+                    contentContainer.innerHTML = `
+                        <div class="classwork-section">
+                            ${currentUser.role === 'teacher' ? `
+                                <div class="classwork-actions">
+                                    <button class="action-button primary-button" onclick="showCreateAssignmentModal('${classData.classCode}')">
+                                        <i class="fas fa-plus"></i> Create
+                                    </button>
+                                </div>
+                            ` : ''}
+                            <div class="classwork-list" id="classworkList"></div>
+                        </div>
+                    `;
+                    renderClasswork(classData);
+                    break;
+                    
+                case 'people':
+                    contentContainer.innerHTML = `
+                        <div class="people-section">
+                            <div class="people-category">
+                                <h3>Teachers</h3>
+                                <div class="people-list" id="teachersList"></div>
+                            </div>
+                            <div class="people-category">
+                                <h3>Students</h3>
+                                <div class="people-list" id="studentsList"></div>
+                            </div>
+                        </div>
+                    `;
+                    renderPeople(classData);
+                    break;
+                    
+                case 'grades':
+                    contentContainer.innerHTML = `
+                        <div class="grades-section">
+                            <h3>Grades</h3>
+                            <div class="grades-table-container">
+                                <table class="grades-table" id="gradesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            ${(classData.assignments || []).map(a => `<th>${a.title}</th>`).join('')}
+                                            <th>Overall</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gradesTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    renderGrades(classData);
+                    break;
+            }
+        }
+        
+        // Announcement functionality
+        function postAnnouncement(e, classData) {
+            e.preventDefault();
+            const text = document.getElementById('announcementText').value;
+            
+            if (!text.trim()) {
+                showToast('Announcement cannot be empty');
+                return;
+            }
+            
+            if (!classData.announcements) {
+                classData.announcements = [];
+            }
+            
+            const announcement = {
+                id: Date.now().toString(),
+                text: text,
+                author: currentUser.name,
+                authorEmail: currentUser.email,
+                authorRole: currentUser.role,
+                timestamp: Date.now()
+            };
+            
+            classData.announcements.unshift(announcement);
+            document.getElementById('announcementText').value = '';
+            renderAnnouncements(classData);
+            showToast('Announcement posted');
+        }
+        
+        function renderAnnouncements(classData) {
+            const container = document.getElementById('announcements');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (!classData.announcements || classData.announcements.length === 0) {
+                container.innerHTML = '<div class="empty-state">No announcements yet</div>';
+                return;
+            }
+            
+            classData.announcements.forEach(announcement => {
+                const div = document.createElement('div');
+                div.className = 'announcement';
+                div.innerHTML = `
+                    <div class="announcement-header">
+                        <span class="announcement-author">${announcement.author} ${announcement.authorRole === 'teacher' ? '(Teacher)' : ''}</span>
+                        <span class="announcement-time">${new Date(announcement.timestamp).toLocaleString()}</span>
+                    </div>
+                    <div class="announcement-text">${announcement.text}</div>
+                    ${currentUser.role === 'teacher' ? 
+                        `<i class="fas fa-trash delete-announcement teacher" onclick="deleteAnnouncement('${announcement.id}', '${classData.classCode}')"></i>` 
+                        : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function deleteAnnouncement(announcementId, classCode) {
+            const classData = classes.find(c => c.classCode === classCode);
+            if (!classData) return;
+            
+            const index = classData.announcements.findIndex(a => a.id === announcementId);
+            if (index !== -1) {
+                classData.announcements.splice(index, 1);
+                renderAnnouncements(classData);
+                showToast('Announcement deleted');
+            }
+        }
+        
+        // Classwork functionality
+        function showCreateAssignmentModal(classCode) {
+            const modal = document.createElement('div');
+            modal.className = 'create-class-modal';
+            modal.id = 'createAssignmentModal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Create Assignment</h2>
+                    </div>
+                    <form class="modal-form" id="createAssignmentForm">
+                        <input type="text" id="assignmentTitle" placeholder="Title" required>
+                        <textarea id="assignmentDescription" placeholder="Instructions (optional)"></textarea>
+                        <div class="form-group">
+                            <label for="assignmentDueDate">Due Date</label>
+                            <input type="date" id="assignmentDueDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="assignmentPoints">Points</label>
+                            <input type="number" id="assignmentPoints" value="100" min="0">
+                        </div>
+                        <input type="hidden" id="assignmentClassCode" value="${classCode}">
+                        <div class="modal-actions">
+                            <button type="button" class="action-button secondary-button" onclick="hideCreateAssignmentModal()">Cancel</button>
+                            <button type="submit" class="action-button primary-button">Create</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+            
+            document.getElementById('createAssignmentForm').addEventListener('submit', createAssignment);
+        }
+        
+        function hideCreateAssignmentModal() {
+            const modal = document.getElementById('createAssignmentModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function createAssignment(e) {
+            e.preventDefault();
+            const title = document.getElementById('assignmentTitle').value;
+            const description = document.getElementById('assignmentDescription').value;
+            const dueDate = document.getElementById('assignmentDueDate').value;
+            const points = document.getElementById('assignmentPoints').value;
+            const classCode = document.getElementById('assignmentClassCode').value;
+            
+            const classData = classes.find(c => c.classCode === classCode);
+            if (!classData) return;
+            
+            if (!classData.assignments) {
+                classData.assignments = [];
+            }
+            
+            const assignment = {
+                id: Date.now().toString(),
+                title: title,
+                description: description,
+                dueDate: dueDate,
+                points: points,
+                createdAt: Date.now(),
+                submissions: []
+            };
+            
+            classData.assignments.push(assignment);
+            hideCreateAssignmentModal();
+            
+            // If we're on the classwork tab, refresh it
+            if (document.querySelector('.class-view-tab[data-tab="classwork"].active')) {
+                renderClasswork(classData);
+            }
+            
+            // Also add an announcement about the new assignment
+            if (!classData.announcements) {
+                classData.announcements = [];
+            }
+            
+            const announcement = {
+                id: Date.now().toString() + 1,
+                text: `New assignment posted: ${title}`,
+                author: currentUser.name,
+                authorEmail: currentUser.email,
+                authorRole: currentUser.role,
+                timestamp: Date.now(),
+                assignmentId: assignment.id
+            };
+            
+            classData.announcements.unshift(announcement);
+            showToast('Assignment created');
+        }
+        
+        function renderClasswork(classData) {
+            const container = document.getElementById('classworkList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (!classData.assignments || classData.assignments.length === 0) {
+                container.innerHTML = '<div class="empty-state">No assignments yet</div>';
+                return;
+            }
+            
+            classData.assignments.forEach(assignment => {
+                const div = document.createElement('div');
+                div.className = 'classwork-item';
+                div.innerHTML = `
+                    <div class="classwork-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="classwork-details">
+                        <div class="classwork-title">${assignment.title}</div>
+                        <div class="classwork-meta">
+                            ${assignment.dueDate ? `Due: ${new Date(assignment.dueDate).toLocaleDateString()}` : 'No due date'}
+                            • ${assignment.points} points
+                        </div>
+                    </div>
+                    <div class="classwork-actions">
+                        <button class="action-button primary-button" onclick="viewAssignment('${assignment.id}', '${classData.classCode}')">
+                            ${currentUser.role === 'teacher' ? 'View' : 'Open'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function viewAssignment(assignmentId, classCode) {
+            const classData = classes.find(c => c.classCode === classCode);
+            if (!classData) return;
+            
+            const assignment = classData.assignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'create-class-modal';
+            modal.id = 'assignmentViewModal';
+            
+            let modalContent = `
+                <div class="modal-content assignment-view">
+                    <div class="modal-header">
+                        <h2>${assignment.title}</h2>
+                        <div class="assignment-meta">
+                            ${assignment.points} points
+                            ${assignment.dueDate ? ` • Due ${new Date(assignment.dueDate).toLocaleDateString()}` : ''}
+                        </div>
+                    </div>
+                    <div class="assignment-description">
+                        ${assignment.description || 'No additional instructions.'}
+                    </div>
+            `;
+            
+            if (currentUser.role === 'student') {
+                // Check if student has already submitted
+                const existingSubmission = assignment.submissions ? 
+                    assignment.submissions.find(s => s.studentEmail === currentUser.email) : null;
+                
+                modalContent += `
+                    <div class="assignment-submission">
+                        <h3>Your work</h3>
+                        <form id="assignmentSubmissionForm">
+                            <textarea id="submissionText" placeholder="Add your answer here...">${existingSubmission ? existingSubmission.text : ''}</textarea>
+                            <input type="hidden" id="submissionAssignmentId" value="${assignment.id}">
+                            <input type="hidden" id="submissionClassCode" value="${classCode}">
+                            <div class="modal-actions">
+                                <button type="button" class="action-button secondary-button" onclick="hideAssignmentViewModal()">Close</button>
+                                <button type="submit" class="action-button primary-button">
+                                    ${existingSubmission ? 'Resubmit' : 'Turn in'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+            } else {
+                // Teacher view - show submissions
+                modalContent += `
+                    <div class="assignment-submissions">
+                        <h3>Student submissions</h3>
+                        <div id="submissionsList">
+                            ${!assignment.submissions || assignment.submissions.length === 0 ? 
+                                '<div class="empty-state">No submissions yet</div>' : 
+                                assignment.submissions.map(sub => `
+                                    <div class="submission-item">
+                                        <div class="submission-header">
+                                            <span class="submission-author">${sub.studentName}</span>
+                                            <span class="submission-time">Submitted: ${new Date(sub.timestamp).toLocaleString()}</span>
+                                        </div>
+                                        <div class="submission-text">${sub.text}</div>
+                                        <div class="submission-grading">
+                                            <input type="number" class="grade-input" 
+                                                value="${sub.grade || ''}" 
+                                                placeholder="Points" 
+                                                min="0" 
+                                                max="${assignment.points}"
+                                                onchange="gradeSubmission('${sub.id}', '${assignment.id}', '${classCode}', this.value)">
+                                            <span>/${assignment.points}</span>
+                                        </div>
+                                    </div>
+                                `).join('')
+                            }
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="action-button secondary-button" onclick="hideAssignmentViewModal()">Close</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            modalContent += `</div>`;
+            modal.innerHTML = modalContent;
+            
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+            
+            if (currentUser.role === 'student') {
+                document.getElementById('assignmentSubmissionForm').addEventListener('submit', submitAssignment);
+            }
+        }
+        
+        function hideAssignmentViewModal() {
+            const modal = document.getElementById('assignmentViewModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function submitAssignment(e) {
+            e.preventDefault();
+            const text = document.getElementById('submissionText').value;
+            const assignmentId = document.getElementById('submissionAssignmentId').value;
+            const classCode = document.getElementById('submissionClassCode').value;
+            
+            const classData = classes.find(c => c.classCode === classCode);
+            if (!classData) return;
+            
+            const assignment = classData.assignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+            
+            if (!assignment.submissions) {
+                assignment.submissions = [];
+            }
+            
+            // Check if student has already submitted
+            const existingIndex = assignment.submissions.findIndex(s => s.studentEmail === currentUser.email);
+            
+            const submission = {
+                id: Date.now().toString(),
+                assignmentId: assignmentId,
+                studentName: currentUser.name,
+                studentEmail: currentUser.email,
+                text: text,
+                timestamp: Date.now(),
+                grade: null
+            };
+            
+            if (existingIndex !== -1) {
+                // Update existing submission
+                assignment.submissions[existingIndex] = submission;
+            } else {
+                // Add new submission
+                assignment.submissions.push(submission);
+            }
+            
+            hideAssignmentViewModal();
+            showToast('Assignment submitted');
+        }
+        
+        function gradeSubmission(submissionId, assignmentId, classCode, grade) {
+            const classData = classes.find(c => c.classCode === classCode);
+            if (!classData) return;
+            
+            const assignment = classData.assignments.find(a => a.id === assignmentId);
+            if (!assignment) return;
+            
+            const submission = assignment.submissions.find(s => s.id === submissionId);
+            if (!submission) return;
+            
+            submission.grade = parseInt(grade) || null;
+            showToast('Grade saved');
+        }
+        
+        // People functionality
+        function renderPeople(classData) {
+            const teachersList = document.getElementById('teachersList');
+            const studentsList = document.getElementById('studentsList');
+            
+            if (!teachersList || !studentsList) return;
+            
+            teachersList.innerHTML = '';
+            studentsList.innerHTML = '';
+            
+            // Add the teacher
+            const teacherDiv = document.createElement('div');
+            teacherDiv.className = 'person-item';
+            teacherDiv.innerHTML = `
+                <div class="person-avatar">${classData.instructor.charAt(0)}</div>
+                <div class="person-name">${classData.instructor}</div>
+            `;
+            teachersList.appendChild(teacherDiv);
+            
+            // Add students
+            if (!classData.students || classData.students.length === 0) {
+                studentsList.innerHTML = '<div class="empty-state">No students enrolled yet</div>';
+                return;
+            }
+            
+            classData.students.forEach(studentEmail => {
+                const student = users.find(u => u.email === studentEmail);
+                if (!student) return;
+                
+                const studentDiv = document.createElement('div');
+                studentDiv.className = 'person-item';
+                studentDiv.innerHTML = `
+                    <div class="person-avatar">${student.name.charAt(0)}</div>
+                    <div class="person-name">${student.name}</div>
+                `;
+                studentsList.appendChild(studentDiv);
+            });
+        }
+        
+        // Grades functionality
+        function renderGrades(classData) {
+            const tableBody = document.getElementById('gradesTableBody');
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = '';
+            
+            if (!classData.students || classData.students.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="100%">No students enrolled</td></tr>';
+                return;
+            }
+            
+            classData.students.forEach(studentEmail => {
+                const student = users.find(u => u.email === studentEmail);
+                if (!student) return;
+                
+                const row = document.createElement('tr');
+                
+                // Add student name
+                const nameCell = document.createElement('td');
+                nameCell.textContent = student.name;
+                row.appendChild(nameCell);
+                
+                // Add grade cells for each assignment
+                let totalPoints = 0;
+                let totalPossible = 0;
+                
+                (classData.assignments || []).forEach(assignment => {
+                    const gradeCell = document.createElement('td');
+                    
+                    const submission = assignment.submissions ? 
+                        assignment.submissions.find(s => s.studentEmail === studentEmail) : null;
+                    
+                    if (submission && submission.grade !== null) {
+                        gradeCell.textContent = `${submission.grade}/${assignment.points}`;
+                        totalPoints += parseInt(submission.grade);
+                        totalPossible += parseInt(assignment.points);
+                    } else if (submission) {
+                        gradeCell.textContent = 'Submitted';
+                        gradeCell.className = 'submitted-no-grade';
+                        totalPossible += parseInt(assignment.points);
+                    } else {
+                        gradeCell.textContent = 'Missing';
+                        gradeCell.className = 'missing';
+                        totalPossible += parseInt(assignment.points);
+                    }
+                    
+                    row.appendChild(gradeCell);
+                });
+                
+                // Add overall grade
+                const overallCell = document.createElement('td');
+                if (totalPossible > 0) {
+                    const percentage = Math.round((totalPoints / totalPossible) * 100);
+                    overallCell.textContent = `${percentage}%`;
+                } else {
+                    overallCell.textContent = 'N/A';
+                }
+                row.appendChild(overallCell);
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Share class functionality
+        function shareClass(classCode) {
+            navigator.clipboard.writeText(classCode)
+                .then(() => {
+                    showToast('Class code copied to clipboard');
+                })
+                .catch(() => {
+                    showToast('Failed to copy class code');
+                });
+        }
+    </script>
+</body>
+</html>

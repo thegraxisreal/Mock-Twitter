@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mock iOS | Mock.Com</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .iphone {
+            width: 375px;
+            height: 812px;
+            background: url('https://images.unsplash.com/photo-1579546929662-711aa81148cf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=1080') center center/cover no-repeat;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border: 10px solid black;
+            transition: all 0.3s ease;
+        }
+        
+        .iphone:before {
+            content: '';
+            position: absolute;
+            background: rgba(0, 0, 0, 0.6);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            z-index: 1;
+        }
+        
+        .notch {
+            width: 160px;
+            height: 30px;
+            background-color: black;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 10;
+        }
+        
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            padding: 0 15px;
+            position: relative;
+            z-index: 5;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .time {
+            padding-top: 14px;
+            padding-left: 25px;
+        }
+        
+        .status-icons {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding-top: 14px;
+            padding-right: 25px;
+        }
+        
+        .status-icons .icon {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+        }
+        
+        .battery {
+            width: 25px;
+            height: 12px;
+            border: 1px solid white;
+            border-radius: 3px;
+            position: relative;
+            margin-left: 5px;
+        }
+        
+        .battery:after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 65%;
+            height: 6px;
+            background-color: white;
+            border-radius: 1px;
+        }
+        
+        .battery:before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 6px;
+            background-color: white;
+            top: 3px;
+            right: -3px;
+            border-radius: 0 2px 2px 0;
+        }
+        
+        .home-screen {
+            position: relative;
+            z-index: 2;
+            height: calc(100% - 44px);
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, auto);
+            gap: 20px;
+            padding-bottom: 110px;
+        }
+        
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: white;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+            gap: 5px;
+        }
+        
+        .app-icon .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-icon .name {
+            font-size: 12px;
+            font-weight: 400;
+        }
+        
+        .dock {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            height: 85px;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(25px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 0 12px;
+            border-radius: 30px;
+            padding: 0 15px;
+        }
+        
+        .dock .app-icon {
+            margin: 0;
+        }
+        
+        .home-indicator {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 135px;
+            height: 5px;
+            background-color: white;
+            border-radius: 3px;
+        }
+        
+        /* App-specific styles */
+        .phone-app .icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .safari-app .icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .messages-app .icon {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+        
+        .music-app .icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .mail-app .icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .photos-app .icon {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+        }
+        
+        .camera-app .icon {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+        
+        .maps-app .icon {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+        
+        .calendar-app .icon {
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            color: #333;
+        }
+        
+        .calendar-app .icon span {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .weather-app .icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .clock-app .icon {
+            background: #000;
+        }
+        
+        .notes-app .icon {
+            background: linear-gradient(135deg, #f1c40f, #f39c12);
+        }
+        
+        .settings-app .icon {
+            background: #e2e2e2;
+            color: #555;
+        }
+        
+        .app-store-app .icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .twitter-app .icon {
+            background: #1da1f2;
+        }
+        
+        .classroom-app .icon {
+            background: linear-gradient(135deg, #4285F4, #34A853);
+        }
+        
+        .klanite-app .icon {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+        }
+        
+        .mock-ios-app .icon {
+            background: linear-gradient(135deg, #5B5F97, #8661C1);
+        }
+        
+        @media (max-width: 500px) {
+            .iphone {
+                width: 100%;
+                height: 95vh;
+                border-width: 8px;
+            }
+            
+            .notch {
+                width: 120px;
+                height: 25px;
+            }
+            
+            .home-screen {
+                gap: 15px;
+                padding: 15px;
+                padding-bottom: 90px;
+            }
+            
+            .app-icon .icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .dock {
+                height: 70px;
+            }
+        }
+        
+        .app-link {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+            display: contents;
+        }
+        
+        .app-link:hover .app-icon .icon {
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+        
+        .app-link:active .app-icon .icon {
+            transform: scale(0.9);
+        }
+
+        .phone-selector-app .icon {
+            background: linear-gradient(135deg, #0066FF 0%, #00CCFF 100%);
+        }
+
+        .model-switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            transition: all 0.3s ease;
+            min-width: 250px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .model-switcher:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .model-switcher h3 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .model-switcher-title {
+            font-size: 1.2rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .model-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .model-option {
+            cursor: pointer;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: #f1f1f1;
+            color: #333;
+            transition: all 0.2s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .model-option:hover {
+            background: #e8e8e8;
+        }
+
+        .model-option.active {
+            background: linear-gradient(135deg, #5B5F97 0%, #8661C1 100%);
+            color: white;
+        }
+        
+        .model-option.active::after {
+            content: "✓";
+            font-weight: bold;
+        }
+        
+        .divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.1);
+            margin: 5px 0;
+        }
+
+        .color-selector {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+
+        .color-dot.active {
+            border: 2px solid #5B5F97;
+        }
+
+        /* iPhone 16e colors */
+        .color-black {
+            background-color: #1a1a1a;
+        }
+
+        .color-white {
+            background-color: #f5f5f7;
+            border: 1px solid #ddd;
+        }
+
+        /* iPhone 16 colors */
+        .color-blue {
+            background-color: #0071e3;
+        }
+
+        .color-pink {
+            background-color: #fcddd4;
+        }
+
+        .color-teal {
+            background-color: #4ac1c3;
+        }
+
+        /* iPhone 16 Pro colors */
+        .color-desert {
+            background-color: #e5d1b7;
+        }
+
+        .color-darkblue {
+            background-color: #2c4058;
+        }
+
+        /* Phone color application */
+        .iphone {
+            border: 10px solid black;
+        }
+
+        .iphone.phone-white {
+            border-color: #f5f5f7;
+        }
+
+        .iphone.phone-black {
+            border-color: #1a1a1a;
+        }
+
+        .iphone.phone-blue {
+            border-color: #0071e3;
+        }
+
+        .iphone.phone-pink {
+            border-color: #fcddd4;
+        }
+
+        .iphone.phone-teal {
+            border-color: #4ac1c3;
+        }
+
+        .iphone.phone-desert {
+            border-color: #e5d1b7;
+        }
+
+        .iphone.phone-darkblue {
+            border-color: #2c4058;
+        }
+
+        .dynamic-island {
+            width: 120px;
+            height: 35px;
+            background-color: black;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 20px;
+            z-index: 15;
+            display: none;
+        }
+
+        .iphone-16 .notch {
+            display: none;
+        }
+
+        .iphone-16 .dynamic-island {
+            display: block;
+        }
+
+        .iphone-16pro {
+            width: 400px;
+            height: 860px;
+        }
+
+        .iphone-16pro .notch {
+            display: none;
+        }
+
+        .iphone-16pro .dynamic-island {
+            display: block;
+        }
+
+        .iphone-16e .notch {
+            display: block;
+        }
+
+        .iphone-16e .dynamic-island {
+            display: none;
+        }
+
+        /* App modals */
+        .app-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 30px;
+        }
+
+        .app-modal.active {
+            display: flex;
+        }
+
+        .app-header {
+            height: 60px;
+            background-color: #f2f2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .app-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .app-back {
+            font-size: 16px;
+            color: #007AFF;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .app-action {
+            font-size: 16px;
+            color: #007AFF;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        /* Clock App Styles */
+        .clock-container {
+            height: calc(100% - 60px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .clock-tabs {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f2f2f7;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .clock-tab {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #707070;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .clock-tab.active {
+            background-color: #007AFF;
+            color: white;
+        }
+
+        .clock-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .clock-panel {
+            display: none;
+            height: 100%;
+        }
+
+        .clock-panel.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-display, .stopwatch-display {
+            font-size: 70px;
+            font-weight: 200;
+            font-variant-numeric: tabular-nums;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .timer-controls, .stopwatch-controls {
+            display: flex;
+            gap: 20px;
+        }
+
+        .timer-btn, .stopwatch-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-start {
+            background-color: #4cd964;
+        }
+
+        .btn-pause {
+            background-color: #ff9500;
+        }
+
+        .btn-reset {
+            background-color: #ff3b30;
+        }
+
+        /* Notes App Styles */
+        .notes-container {
+            height: calc(100% - 60px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notes-list {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .note-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+        }
+
+        .note-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .note-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .note-preview {
+            color: #666;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .note-date {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .note-editor {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+        }
+
+        .note-editor.active {
+            display: flex;
+        }
+
+        .note-title-input {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 15px;
+            border: none;
+            border-bottom: 1px solid #e0e0e0;
+            outline: none;
+        }
+
+        .note-content-input {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+            border: none;
+            outline: none;
+            resize: none;
+        }
+
+        .empty-notes {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+        }
+
+        .empty-notes svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .empty-notes p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* Messages App Styles */
+        .messages-container {
+            height: calc(100% - 60px);
+            display: flex;
+            flex-direction: column;
+            background-color: #f2f2f7;
+        }
+
+        .messages-list {
+            height: 100%;
+            overflow-y: auto;
+            background-color: white;
+        }
+
+        .message-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .message-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .message-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e1e1e1;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .message-content {
+            flex-grow: 1;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .message-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .message-preview {
+            color: #666;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .empty-messages {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .empty-messages svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .empty-messages h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .empty-messages p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            max-width: 250px;
+        }
+
+        .new-message-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+
+        .new-message-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .new-message-btn:active {
+            transform: scale(0.95);
+        }
+
+        .conversation {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background-color: #f2f2f7;
+        }
+
+        .conversation.active {
+            display: flex;
+        }
+
+        .conversation-header {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .conversation-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e1e1e1;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .conversation-info {
+            flex-grow: 1;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .conversation-number {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .messages-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin-bottom: 10px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message-bubble.sent {
+            align-self: flex-end;
+            background-color: #DCF8C6;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-bubble.received {
+            align-self: flex-start;
+            background-color: white;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time-small {
+            font-size: 10px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message-input-container {
+            padding: 10px;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            outline: none;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .send-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .send-button:hover {
+            background-color: #16a085;
+        }
+
+        .new-conversation {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background-color: white;
+        }
+
+        .new-conversation.active {
+            display: flex;
+        }
+
+        .new-conversation-form {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .form-button {
+            padding: 10px 20px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .form-button:hover {
+            background-color: #16a085;
+        }
+
+        .phone-number-display {
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .phone-number-display h3 {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .phone-number-display p {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1abc9c;
+        }
+
+        /* Apply hover effect to all app icons */
+        .app-icon .icon {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .app-icon .icon:hover {
+            transform: scale(0.95);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .app-icon .icon:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Mock.Com
+    </a>
+    
+    <div class="iphone iphone-16e">
+        <div class="notch"></div>
+        <div class="dynamic-island"></div>
+        <div class="status-bar">
+            <div class="time">9:41</div>
+            <div class="status-icons">
+                <div class="signal icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="2">
+                        <path d="M6 18l0-8M10 18l0-12M14 18l0-12M18 18l0-16"/>
+                    </svg>
+                </div>
+                <div class="wifi icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="white" stroke-width="2">
+                        <path d="M12 20v-1M7.05 16.95a5 5 0 0 1 9.9 0M3 13c2.13-3.6 6.14-6 10.5-6 4.363 0 8.373 2.4 10.5 6"/>
+                    </svg>
+                </div>
+                <div class="battery"></div>
+            </div>
+        </div>
+        
+        <div class="home-screen">
+            <!-- First row -->
+            <div class="app-icon mail-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <span class="name">Mail</span>
+            </div>
+            
+            <div class="app-icon calendar-app">
+                <div class="icon">
+                    <span>31</span>
+                </div>
+                <span class="name">Calendar</span>
+            </div>
+            
+            <div class="app-icon photos-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+                <span class="name">Photos</span>
+            </div>
+            
+            <div class="app-icon camera-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                </div>
+                <span class="name">Camera</span>
+            </div>
+            
+            <!-- Second row -->
+            <div class="app-icon maps-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <span class="name">Maps</span>
+            </div>
+            
+            <div class="app-icon clock-app" id="open-clock">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <span class="name">Clock</span>
+            </div>
+            
+            <div class="app-icon notes-app" id="open-notes">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <span class="name">Notes</span>
+            </div>
+            
+            <div class="app-icon settings-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </div>
+                <span class="name">Settings</span>
+            </div>
+            
+            <!-- Third row: Mock.Com Apps -->
+            <a href="twitterhome.html" class="app-link">
+                <div class="app-icon twitter-app">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                        </svg>
+                    </div>
+                    <span class="name">Mock Twitter</span>
+                </div>
+            </a>
+            
+            <a href="classroom.html" class="app-link">
+                <div class="app-icon classroom-app">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                        </svg>
+                    </div>
+                    <span class="name">Classroom <span style="font-size: 8px; background: #ff6b6b; padding: 1px 3px; border-radius: 4px;">BETA</span></span>
+                </div>
+            </a>
+            
+            <a href="twitter.html" class="app-link">
+                <div class="app-icon klanite-app">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 21a9 9 0 0 1-9-9 9 9 0 0 1 9-9 9 9 0 0 1 9 9 9 9 0 0 1-9 9z"></path>
+                            <path d="M8 12h8"></path>
+                            <path d="M12 8v8"></path>
+                        </svg>
+                    </div>
+                    <span class="name">Klanite</span>
+                </div>
+            </a>
+            
+            <a href="phone-selector.html" class="app-link">
+                <div class="app-icon phone-selector-app">
+                    <div class="icon" style="background: linear-gradient(135deg, #0066FF 0%, #00CCFF 100%);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L6.5 12h11L12 2z"/>
+                            <path d="M9 16l-3 6h12l-3-6H9z"/>
+                            <line x1="12" y1="12" x2="12" y2="16"/>
+                        </svg>
+                    </div>
+                    <span class="name">Apple Store</span>
+                </div>
+            </a>
+            
+            <div class="app-icon weather-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"></path>
+                        <polyline points="13 11 9 17 15 17 11 23"></polyline>
+                    </svg>
+                </div>
+                <span class="name">Weather</span>
+            </div>
+            
+            <!-- Fourth row -->
+            <div class="app-icon app-store-app">
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="2" x2="12" y2="6"></line>
+                        <line x1="12" y1="18" x2="12" y2="22"></line>
+                        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                        <line x1="2" y1="12" x2="6" y2="12"></line>
+                        <line x1="18" y1="12" x2="22" y2="12"></line>
+                        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                    </svg>
+                </div>
+                <span class="name">App Store</span>
+            </div>
+            
+            <!-- Bottom dock with 4 apps -->
+            <div class="dock">
+                <div class="app-icon phone-app">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="app-icon safari-app">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="app-icon messages-app" id="open-messages">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="app-icon music-app">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="home-indicator"></div>
+        </div>
+
+        <!-- Clock App Modal -->
+        <div id="clock-modal" class="app-modal">
+            <div class="app-header">
+                <div class="app-back" id="close-clock">Cancel</div>
+                <div class="app-title">Clock</div>
+                <div class="app-action" style="visibility: hidden">Edit</div>
+            </div>
+            <div class="clock-container">
+                <div class="clock-tabs">
+                    <div class="clock-tab" data-tab="world-clock">World Clock</div>
+                    <div class="clock-tab" data-tab="alarm">Alarm</div>
+                    <div class="clock-tab active" data-tab="stopwatch">Stopwatch</div>
+                    <div class="clock-tab" data-tab="timer">Timer</div>
+                </div>
+                <div class="clock-content">
+                    <div class="clock-panel" id="world-clock-panel">
+                        <div style="text-align: center; color: #999; margin-top: 40px;">
+                            <p>World Clock is not implemented in this demo</p>
+                        </div>
+                    </div>
+                    <div class="clock-panel" id="alarm-panel">
+                        <div style="text-align: center; color: #999; margin-top: 40px;">
+                            <p>Alarm is not implemented in this demo</p>
+                        </div>
+                    </div>
+                    <div class="clock-panel active" id="stopwatch-panel">
+                        <div class="stopwatch-display">00:00.00</div>
+                        <div class="stopwatch-controls">
+                            <button class="stopwatch-btn btn-reset" id="stopwatch-reset" disabled>Reset</button>
+                            <button class="stopwatch-btn btn-start" id="stopwatch-start">Start</button>
+                        </div>
+                    </div>
+                    <div class="clock-panel" id="timer-panel">
+                        <div class="timer-display">00:00</div>
+                        <div class="timer-controls">
+                            <button class="timer-btn btn-reset" id="timer-reset" disabled>Reset</button>
+                            <button class="timer-btn btn-start" id="timer-start">Start</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes App Modal -->
+        <div id="notes-modal" class="app-modal">
+            <div class="app-header">
+                <div class="app-back" id="close-notes">Back</div>
+                <div class="app-title">Notes</div>
+                <div class="app-action" id="new-note">New</div>
+            </div>
+            <div class="notes-container">
+                <div class="notes-list" id="notes-list">
+                    <!-- Notes will be loaded here dynamically -->
+                    <div class="empty-notes" id="empty-notes">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <p>No Notes</p>
+                        <button class="app-btn" style="background: #f1c40f; padding: 10px 20px;">Create Your First Note</button>
+                    </div>
+                </div>
+                <div class="note-editor" id="note-editor">
+                    <input type="text" class="note-title-input" id="note-title-input" placeholder="Title">
+                    <textarea class="note-content-input" id="note-content-input" placeholder="Note"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages App Modal -->
+        <div id="messages-modal" class="app-modal">
+            <div class="app-header">
+                <div class="app-back" id="close-messages">Back</div>
+                <div class="app-title">Messages</div>
+                <div class="app-action" id="new-message">New</div>
+            </div>
+            <div class="messages-container">
+                <div class="messages-list" id="messages-list">
+                    <!-- Messages will be loaded here dynamically -->
+                    <div class="empty-messages" id="empty-messages">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <h3>No Messages</h3>
+                        <p>Start a conversation with someone by tapping the compose button below.</p>
+                    </div>
+                </div>
+                <div class="conversation" id="conversation-view">
+                    <div class="conversation-header" id="conversation-header">
+                        <div class="conversation-avatar">J</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">John Doe</div>
+                            <div class="conversation-number">(555) 123-4567</div>
+                        </div>
+                    </div>
+                    <div class="messages-body" id="messages-body">
+                        <!-- Messages will be loaded here dynamically -->
+                    </div>
+                    <div class="message-input-container">
+                        <input type="text" class="message-input" id="message-input" placeholder="iMessage">
+                        <div class="send-button" id="send-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="new-conversation" id="new-conversation">
+                    <div class="phone-number-display">
+                        <h3>Your Phone Number</h3>
+                        <p id="your-phone-number"></p>
+                    </div>
+                    <div class="new-conversation-form">
+                        <div class="form-group">
+                            <label class="form-label">New Message To:</label>
+                            <input type="text" class="form-input" id="new-contact-number" placeholder="Enter phone number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Name (optional):</label>
+                            <input type="text" class="form-input" id="new-contact-name" placeholder="Enter name">
+                        </div>
+                        <button class="form-button" id="start-conversation">Start Conversation</button>
+                    </div>
+                </div>
+                <div class="new-message-btn" id="compose-message">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="model-switcher">
+        <div class="model-switcher-title">iPhone Settings</div>
+        <h3>MODEL</h3>
+        <div class="model-options">
+            <div class="model-option active" data-model="iphone-16e">iPhone 16e</div>
+            <div class="model-option" data-model="iphone-16">iPhone 16</div>
+            <div class="model-option" data-model="iphone-16pro">iPhone 16 Pro</div>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="color-container">
+            <h3>COLOR</h3>
+            <!-- iPhone 16e colors -->
+            <div class="color-selector" id="iphone-16e-colors">
+                <div class="color-dot color-black active" data-color="phone-black"></div>
+                <div class="color-dot color-white" data-color="phone-white"></div>
+            </div>
+            
+            <!-- iPhone 16 colors -->
+            <div class="color-selector" id="iphone-16-colors" style="display: none;">
+                <div class="color-dot color-blue active" data-color="phone-blue"></div>
+                <div class="color-dot color-white" data-color="phone-white"></div>
+                <div class="color-dot color-black" data-color="phone-black"></div>
+                <div class="color-dot color-pink" data-color="phone-pink"></div>
+                <div class="color-dot color-teal" data-color="phone-teal"></div>
+            </div>
+            
+            <!-- iPhone 16 Pro colors -->
+            <div class="color-selector" id="iphone-16pro-colors" style="display: none;">
+                <div class="color-dot color-black active" data-color="phone-black"></div>
+                <div class="color-dot color-white" data-color="phone-white"></div>
+                <div class="color-dot color-desert" data-color="phone-desert"></div>
+                <div class="color-dot color-darkblue" data-color="phone-darkblue"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add interactivity for iPhone model switching
+        document.querySelectorAll('.model-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                document.querySelectorAll('.model-option').forEach(opt => {
+                    opt.classList.remove('active');
+                });
+                
+                // Add active class to clicked option
+                this.classList.add('active');
+                
+                // Get the model from data attribute
+                const model = this.getAttribute('data-model');
+                
+                // Remove all model classes from iPhone
+                const iphone = document.querySelector('.iphone');
+                iphone.classList.remove('iphone-16e', 'iphone-16', 'iphone-16pro');
+                
+                // Add the selected model class
+                iphone.classList.add(model);
+                
+                // Show the correct color selector
+                document.querySelectorAll('.color-selector').forEach(selector => {
+                    selector.style.display = 'none';
+                });
+                document.getElementById(model + '-colors').style.display = 'flex';
+                
+                // Reset to default color for that model
+                const defaultColorDot = document.querySelector('#' + model + '-colors .color-dot.active');
+                if (defaultColorDot) {
+                    // Remove all color classes
+                    iphone.classList.remove('phone-black', 'phone-white', 'phone-blue', 'phone-pink', 'phone-teal', 'phone-desert', 'phone-darkblue');
+                    // Add the default color class
+                    iphone.classList.add(defaultColorDot.getAttribute('data-color'));
+                }
+            });
+        });
+        
+        // Add interactivity for color selection
+        document.querySelectorAll('.color-dot').forEach(dot => {
+            dot.addEventListener('click', function() {
+                // Get the parent color selector
+                const selector = this.closest('.color-selector');
+                
+                // Remove active class from all dots in this selector
+                selector.querySelectorAll('.color-dot').forEach(d => {
+                    d.classList.remove('active');
+                });
+                
+                // Add active class to clicked dot
+                this.classList.add('active');
+                
+                // Get the color from data attribute
+                const color = this.getAttribute('data-color');
+                
+                // Apply color to iPhone
+                const iphone = document.querySelector('.iphone');
+                iphone.classList.remove('phone-black', 'phone-white', 'phone-blue', 'phone-pink', 'phone-teal', 'phone-desert', 'phone-darkblue');
+                iphone.classList.add(color);
+            });
+        });
+
+        // Clock App Functionality
+        document.getElementById('open-clock').addEventListener('click', function() {
+            document.getElementById('clock-modal').classList.add('active');
+        });
+
+        document.getElementById('close-clock').addEventListener('click', function() {
+            document.getElementById('clock-modal').classList.remove('active');
+        });
+
+        // Clock Tabs
+        document.querySelectorAll('.clock-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.clock-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.clock-panel').forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding panel
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId + '-panel').classList.add('active');
+            });
+        });
+
+        // Stopwatch Functionality
+        let stopwatchInterval;
+        let stopwatchRunning = false;
+        let stopwatchStartTime = 0;
+        let stopwatchElapsedTime = 0;
+
+        document.getElementById('stopwatch-start').addEventListener('click', function() {
+            if (!stopwatchRunning) {
+                // Start stopwatch
+                stopwatchStartTime = Date.now() - stopwatchElapsedTime;
+                stopwatchInterval = setInterval(updateStopwatch, 10);
+                this.textContent = 'Stop';
+                this.classList.remove('btn-start');
+                this.classList.add('btn-pause');
+                document.getElementById('stopwatch-reset').disabled = false;
+                stopwatchRunning = true;
+            } else {
+                // Stop stopwatch
+                clearInterval(stopwatchInterval);
+                stopwatchElapsedTime = Date.now() - stopwatchStartTime;
+                this.textContent = 'Start';
+                this.classList.remove('btn-pause');
+                this.classList.add('btn-start');
+                stopwatchRunning = false;
+            }
+        });
+
+        document.getElementById('stopwatch-reset').addEventListener('click', function() {
+            clearInterval(stopwatchInterval);
+            stopwatchElapsedTime = 0;
+            updateStopwatchDisplay(0);
+            const startBtn = document.getElementById('stopwatch-start');
+            startBtn.textContent = 'Start';
+            startBtn.classList.remove('btn-pause');
+            startBtn.classList.add('btn-start');
+            this.disabled = true;
+            stopwatchRunning = false;
+        });
+
+        function updateStopwatch() {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - stopwatchStartTime;
+            updateStopwatchDisplay(elapsedTime);
+        }
+
+        function updateStopwatchDisplay(time) {
+            const minutes = Math.floor(time / 60000);
+            const seconds = Math.floor((time % 60000) / 1000);
+            const milliseconds = Math.floor((time % 1000) / 10);
+            
+            document.querySelector('.stopwatch-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+        }
+
+        // Timer Functionality
+        let timerInterval;
+        let timerRunning = false;
+        let timerDuration = 60; // Default 60 seconds
+        let timerEndTime = 0;
+        let timerRemainingTime = timerDuration;
+
+        document.getElementById('timer-start').addEventListener('click', function() {
+            if (!timerRunning) {
+                // Start timer
+                timerEndTime = Date.now() + timerRemainingTime * 1000;
+                timerInterval = setInterval(updateTimer, 1000);
+                this.textContent = 'Pause';
+                this.classList.remove('btn-start');
+                this.classList.add('btn-pause');
+                document.getElementById('timer-reset').disabled = false;
+                timerRunning = true;
+            } else {
+                // Pause timer
+                clearInterval(timerInterval);
+                timerRemainingTime = Math.max(0, Math.round((timerEndTime - Date.now()) / 1000));
+                this.textContent = 'Resume';
+                this.classList.remove('btn-pause');
+                this.classList.add('btn-start');
+                timerRunning = false;
+            }
+        });
+
+        document.getElementById('timer-reset').addEventListener('click', function() {
+            clearInterval(timerInterval);
+            timerRemainingTime = timerDuration;
+            updateTimerDisplay(timerRemainingTime);
+            const startBtn = document.getElementById('timer-start');
+            startBtn.textContent = 'Start';
+            startBtn.classList.remove('btn-pause');
+            startBtn.classList.add('btn-start');
+            this.disabled = true;
+            timerRunning = false;
+        });
+
+        function updateTimer() {
+            const currentTime = Date.now();
+            const remainingTime = Math.max(0, Math.round((timerEndTime - currentTime) / 1000));
+            
+            updateTimerDisplay(remainingTime);
+            
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                const startBtn = document.getElementById('timer-start');
+                startBtn.textContent = 'Start';
+                startBtn.classList.remove('btn-pause');
+                startBtn.classList.add('btn-start');
+                
+                // Play alarm sound
+                const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-988.mp3');
+                audio.play();
+            }
+        }
+
+        function updateTimerDisplay(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            
+            document.querySelector('.timer-display').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initialize timer display
+        updateTimerDisplay(timerDuration);
+
+        // Notes App Functionality
+        let notes = JSON.parse(localStorage.getItem('ios_notes') || '[]');
+        let currentNoteId = null;
+        let isEditingNote = false;
+
+        document.getElementById('open-notes').addEventListener('click', function() {
+            document.getElementById('notes-modal').classList.add('active');
+            renderNotesList();
+        });
+
+        document.getElementById('close-notes').addEventListener('click', function() {
+            if (isEditingNote) {
+                backToNotesList();
+            } else {
+                document.getElementById('notes-modal').classList.remove('active');
+            }
+        });
+
+        document.getElementById('new-note').addEventListener('click', function() {
+            isEditingNote = true;
+            currentNoteId = Date.now().toString();
+            document.getElementById('note-title-input').value = '';
+            document.getElementById('note-content-input').value = '';
+            document.getElementById('notes-list').style.display = 'none';
+            document.getElementById('note-editor').classList.add('active');
+            document.getElementById('close-notes').textContent = 'Notes';
+            document.getElementById('new-note').textContent = 'Done';
+            document.getElementById('note-title-input').focus();
+        });
+
+        document.querySelector('.empty-notes button').addEventListener('click', function() {
+            document.getElementById('new-note').click();
+        });
+
+        document.getElementById('note-title-input').addEventListener('input', saveCurrentNote);
+        document.getElementById('note-content-input').addEventListener('input', saveCurrentNote);
+
+        function saveCurrentNote() {
+            if (!isEditingNote) return;
+            
+            const title = document.getElementById('note-title-input').value.trim() || 'New Note';
+            const content = document.getElementById('note-content-input').value;
+            const timestamp = Date.now();
+            
+            // Check if we're editing an existing note
+            const existingNoteIndex = notes.findIndex(note => note.id === currentNoteId);
+            
+            if (existingNoteIndex >= 0) {
+                notes[existingNoteIndex] = { 
+                    id: currentNoteId, 
+                    title, 
+                    content, 
+                    updated: timestamp,
+                    created: notes[existingNoteIndex].created 
+                };
+            } else {
+                notes.push({ 
+                    id: currentNoteId, 
+                    title, 
+                    content, 
+                    created: timestamp,
+                    updated: timestamp 
+                });
+            }
+            
+            // Sort notes by updated timestamp (newest first)
+            notes.sort((a, b) => b.updated - a.updated);
+            
+            // Save to localStorage
+            localStorage.setItem('ios_notes', JSON.stringify(notes));
+        }
+
+        function renderNotesList() {
+            const notesList = document.getElementById('notes-list');
+            const emptyNotes = document.getElementById('empty-notes');
+            
+            // Clear previous notes
+            Array.from(notesList.children).forEach(child => {
+                if (!child.id || child.id !== 'empty-notes') {
+                    notesList.removeChild(child);
+                }
+            });
+            
+            if (notes.length === 0) {
+                emptyNotes.style.display = 'flex';
+            } else {
+                emptyNotes.style.display = 'none';
+                
+                notes.forEach(note => {
+                    const noteItem = document.createElement('div');
+                    noteItem.className = 'note-item';
+                    noteItem.setAttribute('data-id', note.id);
+                    
+                    const noteDate = new Date(note.updated);
+                    const formattedDate = noteDate.toLocaleDateString(undefined, { 
+                        month: 'short', day: 'numeric', year: 'numeric' 
+                    });
+                    
+                    noteItem.innerHTML = `
+                        <div class="note-title">${note.title}</div>
+                        <div class="note-preview">${note.content}</div>
+                        <div class="note-date">${formattedDate}</div>
+                    `;
+                    
+                    noteItem.addEventListener('click', function() {
+                        openNote(note.id);
+                    });
+                    
+                    notesList.appendChild(noteItem);
+                });
+            }
+        }
+
+        function openNote(id) {
+            const note = notes.find(note => note.id === id);
+            if (!note) return;
+            
+            isEditingNote = true;
+            currentNoteId = id;
+            
+            document.getElementById('note-title-input').value = note.title;
+            document.getElementById('note-content-input').value = note.content;
+            
+            document.getElementById('notes-list').style.display = 'none';
+            document.getElementById('note-editor').classList.add('active');
+            
+            document.getElementById('close-notes').textContent = 'Notes';
+            document.getElementById('new-note').textContent = 'Done';
+        }
+
+        function backToNotesList() {
+            isEditingNote = false;
+            currentNoteId = null;
+            
+            document.getElementById('notes-list').style.display = 'block';
+            document.getElementById('note-editor').classList.remove('active');
+            
+            document.getElementById('close-notes').textContent = 'Back';
+            document.getElementById('new-note').textContent = 'New';
+            
+            renderNotesList();
+        }
+
+        // Done button in note editor
+        document.getElementById('new-note').addEventListener('click', function() {
+            if (isEditingNote) {
+                // Save the note and go back to list
+                saveCurrentNote();
+                backToNotesList();
+            } else {
+                // Start a new note
+                document.getElementById('new-note').click();
+            }
+        });
+
+        // Messages App Functionality
+        const userPhoneNumber = localStorage.getItem('ios_user_phone') || generatePhoneNumber();
+        // Save the phone number if it doesn't exist
+        if (!localStorage.getItem('ios_user_phone')) {
+            localStorage.setItem('ios_user_phone', userPhoneNumber);
+        }
+        
+        let conversations = JSON.parse(localStorage.getItem('ios_conversations') || '[]');
+        let currentConversationId = null;
+        
+        // Display user's phone number
+        document.getElementById('your-phone-number').textContent = formatPhoneNumber(userPhoneNumber);
+
+        document.getElementById('open-messages').addEventListener('click', function() {
+            document.getElementById('messages-modal').classList.add('active');
+            renderConversationsList();
+        });
+
+        document.getElementById('close-messages').addEventListener('click', function() {
+            if (document.getElementById('conversation-view').classList.contains('active')) {
+                hideConversation();
+            } else if (document.getElementById('new-conversation').classList.contains('active')) {
+                hideNewConversation();
+            } else {
+                document.getElementById('messages-modal').classList.remove('active');
+            }
+        });
+
+        document.getElementById('compose-message').addEventListener('click', function() {
+            showNewConversation();
+        });
+
+        document.getElementById('new-message').addEventListener('click', function() {
+            showNewConversation();
+        });
+
+        document.getElementById('start-conversation').addEventListener('click', function() {
+            const phoneNumber = document.getElementById('new-contact-number').value.trim();
+            const contactName = document.getElementById('new-contact-name').value.trim() || phoneNumber;
+            
+            if (!phoneNumber) {
+                alert('Please enter a phone number');
+                return;
+            }
+            
+            // Check if conversation already exists
+            let conversation = conversations.find(c => c.phoneNumber === phoneNumber);
+            
+            if (!conversation) {
+                // Create new conversation
+                conversation = {
+                    id: Date.now().toString(),
+                    phoneNumber: phoneNumber,
+                    contactName: contactName,
+                    messages: [],
+                    lastUpdated: Date.now()
+                };
+                
+                conversations.push(conversation);
+                saveConversations();
+            }
+            
+            // Open the conversation
+            openConversation(conversation.id);
+        });
+
+        document.getElementById('send-button').addEventListener('click', sendMessage);
+
+        document.getElementById('message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const messageText = document.getElementById('message-input').value.trim();
+            
+            if (!messageText || !currentConversationId) return;
+            
+            const conversation = conversations.find(c => c.id === currentConversationId);
+            if (!conversation) return;
+            
+            const newMessage = {
+                id: Date.now().toString(),
+                text: messageText,
+                timestamp: Date.now(),
+                isSent: true // true if sent by user, false if received
+            };
+            
+            conversation.messages.push(newMessage);
+            conversation.lastUpdated = Date.now();
+            
+            // Sort conversations by last updated (newest first)
+            conversations.sort((a, b) => b.lastUpdated - a.lastUpdated);
+            
+            // Clear input
+            document.getElementById('message-input').value = '';
+            
+            // Save and render
+            saveConversations();
+            renderMessages(conversation);
+            
+            // Simulate a reply after a random delay
+            if (conversation.phoneNumber !== userPhoneNumber) {
+                setTimeout(() => {
+                    simulateReply(conversation);
+                }, 1000 + Math.random() * 3000);
+            }
+        }
+
+        function simulateReply(conversation) {
+            const replies = [
+                "Ok, sounds good!",
+                "Thanks for letting me know.",
+                "I'll get back to you soon.",
+                "That's interesting!",
+                "Can we talk about this later?",
+                "Got it! 👍",
+                "I appreciate that.",
+                "Let me think about it.",
+                "Wow, really?",
+                "I'm not sure about that."
+            ];
+            
+            const replyMessage = {
+                id: Date.now().toString(),
+                text: replies[Math.floor(Math.random() * replies.length)],
+                timestamp: Date.now(),
+                isSent: false
+            };
+            
+            conversation.messages.push(replyMessage);
+            conversation.lastUpdated = Date.now();
+            
+            // Sort conversations by last updated (newest first)
+            conversations.sort((a, b) => b.lastUpdated - a.lastUpdated);
+            
+            // Save and render
+            saveConversations();
+            
+            // Only re-render if we're still viewing this conversation
+            if (currentConversationId === conversation.id) {
+                renderMessages(conversation);
+            }
+            
+            // Update conversation list if visible
+            if (!document.getElementById('conversation-view').classList.contains('active') && 
+                !document.getElementById('new-conversation').classList.contains('active')) {
+                renderConversationsList();
+            }
+        }
+
+        function renderConversationsList() {
+            const messagesList = document.getElementById('messages-list');
+            const emptyMessages = document.getElementById('empty-messages');
+            
+            // Clear previous conversations
+            Array.from(messagesList.children).forEach(child => {
+                if (!child.id || child.id !== 'empty-messages') {
+                    messagesList.removeChild(child);
+                }
+            });
+            
+            if (conversations.length === 0) {
+                emptyMessages.style.display = 'flex';
+            } else {
+                emptyMessages.style.display = 'none';
+                
+                conversations.forEach(conversation => {
+                    const lastMessage = conversation.messages.length > 0 
+                        ? conversation.messages[conversation.messages.length - 1] 
+                        : null;
+                    
+                    const messageItem = document.createElement('div');
+                    messageItem.className = 'message-item';
+                    messageItem.setAttribute('data-id', conversation.id);
+                    
+                    // Get first initial for avatar
+                    const initial = (conversation.contactName || 'U').charAt(0).toUpperCase();
+                    
+                    // Format timestamp
+                    const messageTime = lastMessage 
+                        ? formatMessageTime(lastMessage.timestamp) 
+                        : '';
+                    
+                    messageItem.innerHTML = `
+                        <div class="message-avatar">${initial}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <div class="message-name">${conversation.contactName}</div>
+                                <div class="message-time">${messageTime}</div>
+                            </div>
+                            <div class="message-preview">${lastMessage ? lastMessage.text : 'No messages yet'}</div>
+                        </div>
+                    `;
+                    
+                    messageItem.addEventListener('click', function() {
+                        openConversation(conversation.id);
+                    });
+                    
+                    messagesList.appendChild(messageItem);
+                });
+            }
+        }
+
+        function openConversation(conversationId) {
+            const conversation = conversations.find(c => c.id === conversationId);
+            if (!conversation) return;
+            
+            currentConversationId = conversationId;
+            
+            // Hide other views
+            document.getElementById('messages-list').style.display = 'none';
+            document.getElementById('new-conversation').classList.remove('active');
+            document.getElementById('conversation-view').classList.add('active');
+            document.getElementById('compose-message').style.display = 'none';
+            
+            // Update back button text
+            document.getElementById('close-messages').textContent = 'Messages';
+            document.getElementById('new-message').style.visibility = 'hidden';
+            
+            // Render messages
+            renderMessages(conversation);
+            
+            // Focus message input
+            document.getElementById('message-input').focus();
+        }
+
+        function hideConversation() {
+            currentConversationId = null;
+            
+            // Show messages list
+            document.getElementById('messages-list').style.display = 'block';
+            document.getElementById('conversation-view').classList.remove('active');
+            document.getElementById('compose-message').style.display = 'block';
+            
+            // Update back button text
+            document.getElementById('close-messages').textContent = 'Back';
+            document.getElementById('new-message').style.visibility = 'visible';
+            
+            // Re-render conversations list
+            renderConversationsList();
+        }
+
+        function showNewConversation() {
+            // Hide other views
+            document.getElementById('messages-list').style.display = 'none';
+            document.getElementById('conversation-view').classList.remove('active');
+            document.getElementById('new-conversation').classList.add('active');
+            document.getElementById('compose-message').style.display = 'none';
+            
+            // Update back button text
+            document.getElementById('close-messages').textContent = 'Cancel';
+            document.getElementById('new-message').style.visibility = 'hidden';
+            
+            // Focus phone number input
+            document.getElementById('new-contact-number').focus();
+        }
+
+        function hideNewConversation() {
+            // Show messages list
+            document.getElementById('messages-list').style.display = 'block';
+            document.getElementById('new-conversation').classList.remove('active');
+            document.getElementById('compose-message').style.display = 'block';
+            
+            // Update back button text
+            document.getElementById('close-messages').textContent = 'Back';
+            document.getElementById('new-message').style.visibility = 'visible';
+            
+            // Clear form
+            document.getElementById('new-contact-number').value = '';
+            document.getElementById('new-contact-name').value = '';
+        }
+
+        function saveConversations() {
+            localStorage.setItem('ios_conversations', JSON.stringify(conversations));
+        }
+
+        function generatePhoneNumber() {
+            const areaCode = Math.floor(Math.random() * 900) + 100; // 100-999
+            const prefix = Math.floor(Math.random() * 900) + 100; // 100-999
+            const lineNumber = Math.floor(Math.random() * 9000) + 1000; // 1000-9999
+            return `${areaCode}${prefix}${lineNumber}`;
+        }
+
+        function formatPhoneNumber(phoneNumber) {
+            if (phoneNumber.length === 10) {
+                return `(${phoneNumber.substring(0, 3)}) ${phoneNumber.substring(3, 6)}-${phoneNumber.substring(6)}`;
+            } else {
+                // Try to extract and format a 10-digit number
+                const digits = phoneNumber.replace(/\D/g, '');
+                if (digits.length >= 10) {
+                    const tenDigits = digits.substring(0, 10);
+                    return `(${tenDigits.substring(0, 3)}) ${tenDigits.substring(3, 6)}-${tenDigits.substring(6)}`;
+                }
+            }
+            return phoneNumber; // Return as is if can't format
+        }
+
+        function formatMessageTime(timestamp, includeSeconds = false) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const isToday = date.toDateString() === now.toDateString();
+            
+            let options = { hour: 'numeric', minute: '2-digit' };
+            if (includeSeconds) options.second = '2-digit';
+            
+            const timeString = date.toLocaleTimeString(undefined, options);
+            
+            if (isToday) {
+                return timeString;
+            } else {
+                // For different day, include date
+                options = { month: 'short', day: 'numeric' };
+                const dateString = date.toLocaleDateString(undefined, options);
+                return `${dateString}, ${timeString}`;
+            }
+        }
+
+        // Add some sample conversations for first-time users 
+        function addSampleConversationsIfEmpty() {
+            if (conversations.length === 0) {
+                const names = ["Alice", "Bob", "Charlie", "David", "Emma"];
+                const randomName = names[Math.floor(Math.random() * names.length)];
+                
+                const sampleConversation = {
+                    id: Date.now().toString(),
+                    phoneNumber: generatePhoneNumber(),
+                    contactName: randomName,
+                    messages: [
+                        {
+                            id: (Date.now() - 600000).toString(),
+                            text: `Hi there! I'm ${randomName}. Welcome to the Messages app!`,
+                            timestamp: Date.now() - 600000,
+                            isSent: false
+                        }
+                    ],
+                    lastUpdated: Date.now() - 600000
+                };
+                
+                conversations.push(sampleConversation);
+                saveConversations();
+            }
+        }
+        
+        // Call this function when the app loads
+        addSampleConversationsIfEmpty();
+    </script>
+</body>
+</html>
